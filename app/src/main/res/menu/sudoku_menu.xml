@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:onClick="hSetup"
+        android:title="@string/mnu_setup" />
+    <item
+        android:onClick="hStore"
+        android:title="@string/mnu_store" />
+</menu>
