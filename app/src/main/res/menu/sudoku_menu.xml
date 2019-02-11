@@ -7,4 +7,7 @@
     <item
         android:onClick="hStore"
         android:title="@string/mnu_store" />
+    <item
+        android:onClick="hSolve"
+        android:title="@string/mnu_solve" />
 </menu>

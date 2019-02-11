@@ -42,17 +42,27 @@ class GameData {
             lDbCell = pCells.get(lCount);
             mCells[lDbCell.xCellNumber()] = lDbCell.xCell();
         }
+        sDigitCount();
+        mPencilMode = pPencil;
+        mSetUpMode = pSetUp;
+        mSelection = pSelection;
+        mSelectionRow = mSelection / 9;
+        mSelectionColumn = mSelection % 9;
+    }
+
+    void sDigitCount(){
+        int lCount;
+
         for (lCount = 0; lCount < mDigitCount.length; lCount++){
             mDigitCount[lCount] = 0;
         }
         for (lCount = 0; lCount < mCells.length; lCount++){
             mDigitCount[mCells[lCount].xValue()]++;
         }
-        mPencilMode = pPencil;
-        mSetUpMode = pSetUp;
-        mSelection = pSelection;
-        mSelectionRow = mSelection / 9;
-        mSelectionColumn = mSelection % 9;
+    }
+
+    void xDigitCount(){
+        sDigitCount();
     }
 
     Cell[] xCells() {
@@ -119,6 +129,7 @@ class GameData {
         for (lCount = 0; lCount < mCells.length; lCount++) {
             mCells[lCount].xReset();
         }
+        sDigitCount();
         mSetUpMode = true;
     }
 

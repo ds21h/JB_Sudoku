@@ -30,7 +30,7 @@ class Cell {
         sReset();
     }
 
-    void sReset(){
+    private void sReset(){
         int lCount;
 
         mValue = 0;
