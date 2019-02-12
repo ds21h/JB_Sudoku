@@ -10,4 +10,13 @@
     <item
         android:onClick="hSolve"
         android:title="@string/mnu_solve" />
+    <item
+        android:onClick="hGenerate"
+        android:title="@string/mnu_generate" />
+    <item
+        android:onClick="hFillPencil"
+        android:title="@string/mnu_fill_pencil" />
+    <item
+        android:onClick="hClearPencil"
+        android:title="@string/mnu_clear_pencil" />
 </menu>

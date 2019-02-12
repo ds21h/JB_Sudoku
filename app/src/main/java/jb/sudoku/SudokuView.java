@@ -7,12 +7,17 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
 
 public class SudokuView extends View {
+    interface intSudokuView{
+        void onSolved();
+    }
     private final int cMargin = 10;
     private final int cButtonMargin = 20;
     private Paint mPaint = new Paint();
     private final int cColorBackNorm = Color.argb(255, 255, 255, 245);
+    private final int cColorBackFixed = Color.argb(255, 230, 230, 230);
     private final int cColorBackRange = Color.argb(255, 255, 255, 150);
     private final int cColorBackValue = Color.argb(255, 150, 255, 255);
     private final int cColorForeNorm = Color.BLACK;
@@ -30,6 +35,8 @@ public class SudokuView extends View {
     private SudokuGame mGame = null;
     private RectF[] mButton = new RectF[10];
 
+    private intSudokuView mIntView = null;
+
     SudokuView(Context pContext) {
         super(pContext);
         sInit();
@@ -43,6 +50,15 @@ public class SudokuView extends View {
 
     void setGame(SudokuGame pGame){
         mGame = pGame;
+    }
+
+    /**
+     * Set listener for onSolved
+     *
+     * @param pIntView  intSudokuView   Listener
+     */
+    void setIntSudokuView(intSudokuView pIntView){
+        mIntView = pIntView;
     }
 
     @Override
@@ -73,18 +89,25 @@ public class SudokuView extends View {
                 }
             }
             if (!lCellSelect){
-                lRect = new RectF(pEvent.getX(), pEvent.getY(), pEvent.getX(), pEvent.getY());
-                if (mButton[0].contains(lRect)){
-                    if (!mGame.xGameData().xSetUpMode()){
-                        mGame.xGameData().xPencilFlip();
-                        invalidate();
-                    }
-                } else {
-                    for (lCount = 1; lCount <= 9; lCount++){
-                        if (mButton[lCount].contains(lRect)){
-                            mGame.xProcessDigit(lCount);
+                if (!mGame.xGameData().xSolved()){
+                    lRect = new RectF(pEvent.getX(), pEvent.getY(), pEvent.getX(), pEvent.getY());
+                    if (mButton[0].contains(lRect)){
+                        if (!mGame.xGameData().xSetUpMode()){
+                            mGame.xGameData().xPencilFlip();
                             invalidate();
-                            break;
+                        }
+                    } else {
+                        for (lCount = 1; lCount <= 9; lCount++){
+                            if (mButton[lCount].contains(lRect)){
+                                mGame.xProcessDigit(lCount);
+                                if (mGame.xGameData().xSolved()){
+                                    if (mIntView != null){
+                                        mIntView.onSolved();
+                                    }
+                                }
+                                invalidate();
+                                break;
+                            }
                         }
                     }
                 }
@@ -100,7 +123,9 @@ public class SudokuView extends View {
         mCellSize = (getWidth() - (2 * cMargin)) / 9F;
         mButtonSize = (getWidth() / 6F) - (2 * cButtonMargin);
         sDrawPlayField(pCanvas);
-        sDrawButtons(pCanvas);
+        if (!(mGame != null && mGame.xGameData().xSolved())){
+            sDrawButtons(pCanvas);
+        }
     }
 
     private void sDrawPlayField(Canvas pCanvas){
@@ -129,10 +154,14 @@ public class SudokuView extends View {
                 if (mGame.xSelectionValue(lRow, lColumn)){
                     mPaint.setColor(cColorBackValue);
                 } else {
-                    if (mGame.xSelectionRange(lRow, lColumn)){
-                        mPaint.setColor(cColorBackRange);
+                    if (lCell.xFixed()){
+                        mPaint.setColor(cColorBackFixed);
                     } else {
-                        mPaint.setColor(cColorBackNorm);
+                        if (mGame.xSelectionRange(lRow, lColumn)){
+                            mPaint.setColor(cColorBackRange);
+                        } else {
+                            mPaint.setColor(cColorBackNorm);
+                        }
                     }
                 }
                 pCanvas.drawRect(lRect, mPaint);
@@ -147,30 +176,22 @@ public class SudokuView extends View {
                 mPaint.setStyle(Paint.Style.FILL);
                 if (lCell.xValue() > 0){
                     //  Normal
-                    mPaint.setTextSize(mCellSize);
-                    if (lCell.xFixed()){
-                        mPaint.setFakeBoldText(true);
-                    } else {
-                        mPaint.setFakeBoldText(false);
-                    }
+                    mPaint.setTextSize(mCellSize * 0.8F);
                     if (lCell.xConflict()){
                         mPaint.setColor(cColorForeConflict);
                     } else {
                         mPaint.setColor(cColorForeNorm);
                     }
-                    pCanvas.drawText(String.valueOf(lCell.xValue()), lRect.centerX(), lRect.bottom - (mPaint.getFontMetrics().descent / 2), mPaint);
+                    pCanvas.drawText(String.valueOf(lCell.xValue()), lRect.centerX(), lRect.bottom - mPaint.getFontMetrics().descent, mPaint);
                 } else {
-                    if (mGame.xGameData().xPencilMode()){
-                        // Pencil
-                        mPaint.setTextSize(lPencilCellSize);
-                        mPaint.setFakeBoldText(false);
-                        mPaint.setColor(cColorForeNorm);
-                        for (lPencilRow = 0; lPencilRow < 3; lPencilRow++){
-                            for (lPencilColumn = 0; lPencilColumn < 3; lPencilColumn++){
-                                lPencil = (lPencilRow * 3) + lPencilColumn + 1;
-                                if (lCell.xPencil(lPencil)){
-                                    pCanvas.drawText(String.valueOf(lPencil), lRect.left + (lPencilColumn * lPencilCellSize) + (lPencilCellSize / 2), lRect.top + ((lPencilRow + 1) * lPencilCellSize) - (mPaint.getFontMetrics().descent / 2), mPaint);
-                                }
+                    // Pencil
+                    mPaint.setTextSize(lPencilCellSize);
+                    mPaint.setColor(cColorForeNorm);
+                    for (lPencilRow = 0; lPencilRow < 3; lPencilRow++){
+                        for (lPencilColumn = 0; lPencilColumn < 3; lPencilColumn++){
+                            lPencil = (lPencilRow * 3) + lPencilColumn + 1;
+                            if (lCell.xPencil(lPencil)){
+                                pCanvas.drawText(String.valueOf(lPencil), lRect.left + (lPencilColumn * lPencilCellSize) + (lPencilCellSize / 2), lRect.top + ((lPencilRow + 1) * lPencilCellSize) - (mPaint.getFontMetrics().descent / 2), mPaint);
                             }
                         }
                     }
@@ -215,7 +236,6 @@ public class SudokuView extends View {
 
             mPaint.setColor(cColorForeNorm);
             mPaint.setTextSize(mCellSize);
-            mPaint.setFakeBoldText(false);
             mPaint.setStyle(Paint.Style.FILL);
             pCanvas.drawText(String.valueOf(lCount), lRectF.centerX(), lRectF.bottom - mPaint.getFontMetrics().descent, mPaint);
 
@@ -241,7 +261,6 @@ public class SudokuView extends View {
 
             mPaint.setColor(cColorForeNorm);
             mPaint.setTextSize(mCellSize);
-            mPaint.setFakeBoldText(false);
             mPaint.setStyle(Paint.Style.FILL);
             pCanvas.drawText("P", lRectF.centerX(), lRectF.bottom - mPaint.getFontMetrics().descent, mPaint);
         }
