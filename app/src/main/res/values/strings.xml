@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Sudoku</string>
+    <string name="mnu_setup">Setup</string>
+    <string name="mnu_store">Store</string>
+    <string name="mnu_solve">Solve</string>
+    <string name="mnu_generate">Generate</string>
+    <string name="mnu_fill_pencil">Fill pencil</string>
+    <string name="mnu_clear_pencil">Clear pencil</string>
+    <string name="msg_solved">Puzzle solved!</string>
+</resources>
