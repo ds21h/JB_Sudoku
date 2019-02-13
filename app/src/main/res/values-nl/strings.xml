@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Sudoku</string>
+    <string name="mnu_setup">Opzetten</string>
+    <string name="mnu_store">Spelen</string>
+    <string name="mnu_solve">Oplossen</string>
+    <string name="mnu_generate">Genereren</string>
+    <string name="mnu_fill_pencil">Vul potlood</string>
+    <string name="mnu_clear_pencil">Wis potlood</string>
+    <string name="msg_solved">Puzzle opgelost!</string>
+</resources>
