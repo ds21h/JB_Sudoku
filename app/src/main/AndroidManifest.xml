@@ -12,7 +12,14 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainSudoku">
+            android:name=".SelectDifficulty"
+            android:screenOrientation="portrait"
+            android:label="@string/head_select_difficulty"
+            android:theme="@android:style/Theme.Holo.Light.Dialog.NoActionBar">
+        </activity>
+        <activity
+            android:name=".MainSudoku"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

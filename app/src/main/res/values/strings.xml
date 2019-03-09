@@ -4,7 +4,21 @@
     <string name="mnu_store">Store</string>
     <string name="mnu_solve">Solve</string>
     <string name="mnu_generate">Generate</string>
-    <string name="mnu_fill_pencil">Fill pencil</string>
-    <string name="mnu_clear_pencil">Clear pencil</string>
     <string name="msg_solved">Puzzle solved!</string>
+    <string name="msg_unsolvable">Puzzle not solvable!</string>
+    <string name="mnu_level_easy">Easy</string>
+    <string name="mnu_level_medium">Medium</string>
+    <string name="mnu_level_hard">Hard</string>
+    <string name="mnu_new">New game</string>
+    <string name="msg_no_game">No game available!</string>
+    <string name="mnu_setup_start">Start</string>
+    <string name="mnu_setup_finish">Finish</string>
+    <string name="mnu_level_very_easy">Very easy</string>
+    <string name="mnu_level_very_hard">Very hard</string>
+    <string name="head_select_difficulty">Select difficulty</string>
+    <string name="msg_no_selection">Nothing selected!</string>
+    <string name="msg_game_stored">Game stored!</string>
+    <string name="mnu_pencil">Pencil</string>
+    <string name="mnu_pencil_fill">Fill</string>
+    <string name="mnu_pencil_clear">Clear</string>
 </resources>

@@ -2,10 +2,24 @@
 <resources>
     <string name="app_name">Sudoku</string>
     <string name="mnu_setup">Opzetten</string>
-    <string name="mnu_store">Spelen</string>
+    <string name="mnu_store">Opslaan</string>
     <string name="mnu_solve">Oplossen</string>
     <string name="mnu_generate">Genereren</string>
-    <string name="mnu_fill_pencil">Vul potlood</string>
-    <string name="mnu_clear_pencil">Wis potlood</string>
     <string name="msg_solved">Puzzle opgelost!</string>
+    <string name="msg_unsolvable">Puzzle niet oplosbaar!</string>
+    <string name="mnu_level_easy">Makkelijk</string>
+    <string name="mnu_level_medium">Gemiddeld</string>
+    <string name="mnu_level_hard">Moeilijk</string>
+    <string name="mnu_new">Nieuw</string>
+    <string name="msg_no_game">Geen spel beschikbaar!</string>
+    <string name="mnu_setup_start">Start</string>
+    <string name="mnu_setup_finish">Klaar</string>
+    <string name="mnu_level_very_easy">Erg makkelijk</string>
+    <string name="mnu_level_very_hard">Erg moeilijk</string>
+    <string name="head_select_difficulty">Zet moeilijkheid</string>
+    <string name="msg_no_selection">Niets geselecteerd!</string>
+    <string name="msg_game_stored">Spel opgeslagen!</string>
+    <string name="mnu_pencil">Potlood</string>
+    <string name="mnu_pencil_fill">Vullen</string>
+    <string name="mnu_pencil_clear">Wissen</string>
 </resources>

@@ -4,30 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-/**
- * Cellwrapper for use during solving of the game.
- * Add a basis flag to indicate whether or not the solver is autorised to change the cell.
- * Also adds the memory which values haven't been used yet.
- */
-class SolveCell {
-    private Cell mCell;
-    private boolean mBasis;
+class GenerateCell extends Cell {
     private List<Integer> mFree;
 
-    /**
-     * Constructor for creating instance 'around' the given cell
-     *
-     * @param pCell     Cell    The given cell
-     */
-    SolveCell(Cell pCell){
+    GenerateCell(){
+        super();
         mFree = new ArrayList<>();
-        mCell = pCell;
-        if (mCell.xValue() > 0){
-            mBasis = true;
-        } else {
-            mBasis = false;
-            sResetFree();
-        }
+        sResetFree();
     }
 
     /**
@@ -43,15 +26,6 @@ class SolveCell {
     }
 
     /**
-     * Gets the basis flag
-     *
-     * @return      boolean     The basis flag
-     */
-    boolean xBasis(){
-        return mBasis;
-    }
-
-    /**
      * Sets this cell to a next (not yet used) value
      *
      * @param pRandom   Random  The random generator to use
@@ -63,21 +37,19 @@ class SolveCell {
 
         if (mFree.size() > 0){
             lPos = pRandom.nextInt(mFree.size());
-            mCell.xValue(mFree.get(lPos));
+            xValue(mFree.get(lPos));
             mFree.remove(lPos);
             lResult = true;
         } else {
-            mCell.xReset();
+            xReset();
             lResult = false;
         }
         return lResult;
     }
 
-    /**
-     * Reset this wrapper and the cell to empty
-     */
+    @Override
     void xReset(){
-        mCell.xReset();
+        super.xReset();
         sResetFree();
     }
 }

@@ -2,21 +2,73 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:onClick="hSetup"
-        android:title="@string/mnu_setup" />
+        android:id="@+id/mnuGenerate"
+        android:title="@string/mnu_generate">
+        <menu>
+            <item
+                android:onClick="hGenerate1"
+                android:title="@string/mnu_level_easy" />
+            <item
+                android:onClick="hGenerate2"
+                android:title="@string/mnu_level_medium" />
+            <item
+                android:onClick="hGenerate3"
+                android:title="@string/mnu_level_hard" />
+        </menu>
+    </item>
     <item
+        android:id="@+id/mnuNew"
+        android:title="@string/mnu_new">
+        <menu>
+            <item
+                android:onClick="hNew0"
+                android:title="@string/mnu_level_very_easy" />
+            <item
+                android:onClick="hNew1"
+                android:title="@string/mnu_level_easy" />
+            <item
+                android:onClick="hNew2"
+                android:title="@string/mnu_level_medium" />
+            <item
+                android:onClick="hNew3"
+                android:title="@string/mnu_level_hard" />
+            <item
+                android:onClick="hNew4"
+                android:title="@string/mnu_level_very_hard" />
+        </menu>
+    </item>
+    <item
+        android:id="@+id/mnuSetup"
+        android:title="@string/mnu_setup">
+        <menu>
+            <item
+                android:id="@+id/mnuSetupStart"
+                android:onClick="hSetupStart"
+                android:title="@string/mnu_setup_start" />
+            <item
+                android:id="@+id/mnuSetupFinish"
+                android:onClick="hSetupFinish"
+                android:title="@string/mnu_setup_finish" />
+        </menu>
+    </item>
+    <item
+        android:id="@+id/mnuStore"
         android:onClick="hStore"
         android:title="@string/mnu_store" />
     <item
+        android:id="@+id/mnuSolve"
         android:onClick="hSolve"
         android:title="@string/mnu_solve" />
     <item
-        android:onClick="hGenerate"
-        android:title="@string/mnu_generate" />
-    <item
-        android:onClick="hFillPencil"
-        android:title="@string/mnu_fill_pencil" />
-    <item
-        android:onClick="hClearPencil"
-        android:title="@string/mnu_clear_pencil" />
+        android:id="@+id/mnuPencil"
+        android:title="@string/mnu_pencil">
+        <menu >
+            <item
+                android:onClick="hFillPencil"
+                android:title="@string/mnu_pencil_fill" />
+            <item
+                android:onClick="hClearPencil"
+                android:title="@string/mnu_pencil_clear" />
+        </menu>
+    </item>
 </menu>

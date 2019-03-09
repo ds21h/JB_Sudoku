@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    tools:context=".SelectDifficulty">
+
+    <Space
+        android:layout_width="15dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0" />
+
+    <RadioGroup
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/head_select_difficulty"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="15dp" />
+
+        <RadioButton
+            android:id="@+id/rdoVeryEasy"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/mnu_level_very_easy" />
+
+        <RadioButton
+            android:id="@+id/rdoEasy"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/mnu_level_easy" />
+
+        <RadioButton
+            android:id="@+id/rdoMedium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/mnu_level_medium" />
+
+        <RadioButton
+            android:id="@+id/rdoHard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/mnu_level_hard" />
+
+        <RadioButton
+            android:id="@+id/rdoVeryHard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/mnu_level_very_hard" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="10dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <Button
+                android:id="@+id/btnOK"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:onClick="hOk_Click"
+                android:text="OK" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+        </LinearLayout>
+
+    </RadioGroup>
+
+    <Space
+        android:layout_width="15dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0" />
+
+</LinearLayout>
