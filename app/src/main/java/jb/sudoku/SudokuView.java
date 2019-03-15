@@ -46,14 +46,12 @@ public class SudokuView extends View {
 
     private intSudokuView mIntView = null;
 
-    @SuppressWarnings("unused")
-    SudokuView(Context pContext) {
+    public SudokuView(Context pContext) {
         super(pContext);
         sInit();
     }
 
-    @SuppressWarnings("unused")
-    SudokuView(Context pContext, AttributeSet pAttrSet) {
+    public SudokuView(Context pContext, AttributeSet pAttrSet) {
         super(pContext, pAttrSet);
         sInit();
     }
@@ -66,7 +64,7 @@ public class SudokuView extends View {
         mPaint.setTextAlign(Paint.Align.CENTER);
     }
 
-    void setGame(SudokuGame pGame) {
+    public void setGame(SudokuGame pGame) {
         mGame = pGame;
     }
 
@@ -75,7 +73,7 @@ public class SudokuView extends View {
      *
      * @param pIntView intSudokuView   Listener
      */
-    void setIntSudokuView(intSudokuView pIntView) {
+    public void setIntSudokuView(intSudokuView pIntView) {
         mIntView = pIntView;
     }
 
