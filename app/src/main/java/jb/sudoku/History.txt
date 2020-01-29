@@ -14,3 +14,6 @@ Version 1.0 - 09-03-2019
 -   Can store manually entered or generated games to use as seed
 -   Has solver
 -   User interface in English and Dutch
+
+Version 1.1 - 29-01-2020
+-   Multiple playing fields

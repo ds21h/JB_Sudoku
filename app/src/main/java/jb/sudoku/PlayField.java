@@ -2,29 +2,31 @@ package jb.sudoku;
 
 import java.util.List;
 
-class GameData {
+class PlayField {
+    private int mFieldId;
     private PlayCell[] mCells;
     private boolean mPencilMode;
-    private boolean mSetUpMode;
-    private boolean mLibraryMode;
-    private boolean mSolved;
+    //    private boolean mSetUpMode;
+//    private boolean mLibraryMode;
+//    private boolean mSolved;
     private int mSelection;
     private int mSelectionRow;
     private int mSelectionColumn;
-    private int mGameStatus;
-    static final int cStatusNone = 0;
-    static final int cStatusSetup = 1;
-    static final int cStatusGenerate = 2;
-    static final int cStatusPlay = 3;
-    static final int cStatusSolved = 4;
-    private int mDifficulty;
-    private int mUsedTime;
+//    private int mGameStatus;
+//    static final int cStatusNone = 0;
+//    static final int cStatusSetup = 1;
+//    static final int cStatusGenerate = 2;
+//    static final int cStatusPlay = 3;
+//    static final int cStatusSolved = 4;
+//    private int mDifficulty;
+//    private int mUsedTime;
 
     private int[] mDigitCount = new int[10];
 
-    GameData() {
+    PlayField() {
         int lCount;
 
+        mFieldId = 0;
         mCells = new PlayCell[81];
         for (lCount = 0; lCount < mCells.length; lCount++) {
             mCells[lCount] = new PlayCell();
@@ -33,22 +35,23 @@ class GameData {
         for (lCount = 1; lCount < mDigitCount.length; lCount++) {
             mDigitCount[lCount] = 0;
         }
-        mGameStatus = cStatusNone;
         mPencilMode = false;
+/*        mGameStatus = cStatusNone;
         mSetUpMode = false;
         mLibraryMode = false;
         mSolved = false;
         mDifficulty = -1;
-        mUsedTime = 0;
+        mUsedTime = 0; */
         mSelection = 0;
         mSelectionRow = 0;
         mSelectionColumn = 0;
     }
 
-    GameData(List<DbCell> pCells, int pSelection, boolean pSetUp, boolean pPencil, boolean pLib, int pDifficulty, int pUsedTime) {
+    PlayField(int pFieldId, List<DbCell> pCells, int pSelection, boolean pPencil) {
         int lCount;
         DbCell lDbCell;
 
+        mFieldId = pFieldId;
         mCells = new PlayCell[81];
         for (lCount = 0; lCount < mCells.length; lCount++) {
             mCells[lCount] = new PlayCell();
@@ -59,12 +62,12 @@ class GameData {
         }
         sDigitCount();
         mPencilMode = pPencil;
-        mSetUpMode = pSetUp;
-        mLibraryMode = pLib;
+//        mSetUpMode = pSetUp;
+//        mLibraryMode = pLib;
         mSelection = pSelection;
         mSelectionRow = mSelection / 9;
         mSelectionColumn = mSelection % 9;
-        if (pCells.size() > 0){
+/*        if (pCells.size() > 0){
             if (mSetUpMode) {
                 mGameStatus = cStatusSetup;
             } else {
@@ -78,7 +81,7 @@ class GameData {
             mGameStatus = cStatusNone;
         }
         mDifficulty = pDifficulty;
-        mUsedTime = pUsedTime;
+        mUsedTime = pUsedTime; */
     }
 
     private void sDigitCount() {
@@ -90,27 +93,41 @@ class GameData {
         for (lCount = 0; lCount < mCells.length; lCount++) {
             mDigitCount[mCells[lCount].xValue()]++;
         }
-        //noinspection RedundantIfStatement
+/*        //noinspection RedundantIfStatement
         if (mDigitCount[0] > 0) {
             mSolved = false;
         } else {
             mSolved = true;
-        }
+        } */
+    }
+
+    boolean xSolved() {
+        return (mDigitCount[0] == 0) ? true : false;
+    }
+
+    boolean xEmptyField() {
+        return (mDigitCount[0] == 81) ? true : false;
     }
 
     PlayCell[] xCells() {
         return mCells;
     }
 
-    boolean xSolved() {
-        return mSolved;
-    }
-
     void xCells(Cell[] pCells) {
-        xCells(pCells, mLibraryMode);
+        int lCount;
+
+        for (lCount = 0; lCount < mCells.length; lCount++) {
+            mCells[lCount].xInitCell(pCells[lCount]);
+        }
+        mPencilMode = false;
+        sDigitCount();
     }
 
-    void xCells(Cell[] pCells, boolean pLibrary) {
+    int xFieldId(){
+        return mFieldId;
+    }
+
+/*    void xCells(Cell[] pCells, boolean pLibrary) {
         int lCount;
 
         for (lCount = 0; lCount < mCells.length; lCount++) {
@@ -120,7 +137,7 @@ class GameData {
         mPencilMode = false;
         mLibraryMode = pLibrary;
         sDigitCount();
-    }
+    } */
 
     boolean xPencilMode() {
         return mPencilMode;
@@ -130,41 +147,41 @@ class GameData {
         mPencilMode = !mPencilMode;
     }
 
-    boolean xSetUpMode() {
+/*    boolean xSetUpMode() {
         return mSetUpMode;
-    }
+    } */
 
-    boolean xLibraryMode() {
+/*    boolean xLibraryMode() {
         return mLibraryMode;
-    }
+    } */
 
-    int xGameStatus() {
+/*    int xGameStatus() {
         return mGameStatus;
-    }
+    } */
 
-    void xGameStatus(int pStatus) {
+/*    void xGameStatus(int pStatus) {
         mGameStatus = pStatus;
-    }
+    } */
 
-    int xDifficulty(){
+/*    int xDifficulty(){
         return mDifficulty;
-    }
+    } */
 
-    void xDifficulty(int pDifficulty){
+/*    void xDifficulty(int pDifficulty){
         mDifficulty = pDifficulty;
-    }
+    } */
 
-    int xUsedTime(){
+/*    int xUsedTime(){
         return mUsedTime;
-    }
+    } */
 
-    void xResetUsedTime(){
+/*    void xResetUsedTime(){
         mUsedTime = 0;
-    }
+    } */
 
-    void xAddUsedTime(int pCorr){
+/*    void xAddUsedTime(int pCorr){
         mUsedTime += pCorr;
-    }
+    } */
 
     PlayCell xSelectedCell() {
         return mCells[mSelection];
@@ -208,7 +225,7 @@ class GameData {
         }
     }
 
-    void xInitSetUp() {
+/*    void xInitSetUp() {
         int lCount;
 
         if (!mSetUpMode) {
@@ -221,9 +238,34 @@ class GameData {
             mLibraryMode = false;
             mDifficulty = -1;
         }
+    } */
+
+    void xResetField() {
+        int lCount;
+
+        for (lCount = 0; lCount < mCells.length; lCount++) {
+            mCells[lCount].xReset();
+        }
+        sDigitCount();
+        mPencilMode = false;
     }
 
-    void xFinishSetup() {
+    void xFixField() {
+        int lCount;
+        Cell lCell;
+
+        for (lCount = 0; lCount < mCells.length; lCount++) {
+            lCell = mCells[lCount];
+            if (lCell.xValue() == 0) {
+                lCell.xFixed(false);
+            } else {
+                lCell.xFixed(true);
+            }
+        }
+        sDigitCount();
+    }
+
+/*    void xFinishSetup() {
         int lCount;
         Cell lCell;
 
@@ -239,7 +281,7 @@ class GameData {
             sDigitCount();
             mSetUpMode = false;
         }
-    }
+    } */
 
     String xGame() {
         StringBuilder lBuilder;
@@ -273,12 +315,12 @@ class GameData {
             lCell.xValue(pValue);
             mDigitCount[pValue]++;
         }
-        //noinspection RedundantIfStatement
+/*        //noinspection RedundantIfStatement
         if (mDigitCount[0] > 0) {
             mSolved = false;
         } else {
             mSolved = true;
-        }
+        } */
     }
 
 

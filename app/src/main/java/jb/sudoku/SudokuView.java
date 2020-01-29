@@ -106,8 +106,8 @@ public class SudokuView extends View {
                             lRow = (int) (lDispl / mCellSize);
                             if (lRow < 9) {
                                 lCellSelect = true;
-                                mGame.xGameData().xSelectionRow(lRow);
-                                mGame.xGameData().xSelectionColumn(lColumn);
+                                mGame.xPlayField().xSelectionRow(lRow);
+                                mGame.xPlayField().xSelectionColumn(lColumn);
                                 invalidate();
                             }
                         }
@@ -117,15 +117,15 @@ public class SudokuView extends View {
                     if (mButtonsEnabled){
                         lRect = new RectF(pEvent.getX(), pEvent.getY(), pEvent.getX(), pEvent.getY());
                         if (mButton[0].contains(lRect)) {
-                            if (!mGame.xGameData().xSetUpMode()) {
-                                mGame.xGameData().xPencilFlip();
+                            if (!(mGame.xGameStatus() == SudokuGame.cStatusSetup)) {
+                                mGame.xPlayField().xPencilFlip();
                                 invalidate();
                             }
                         } else {
                             for (lCount = 1; lCount <= 9; lCount++) {
                                 if (mButton[lCount].contains(lRect)) {
                                     mGame.xProcessDigit(lCount);
-                                    if (mGame.xGameData().xSolved()) {
+                                    if (mGame.xGameStatus() == SudokuGame.cStatusSolved) {
                                         if (mIntView != null) {
                                             mIntView.onSolved();
                                         }
@@ -150,7 +150,7 @@ public class SudokuView extends View {
             mCellSize = (getWidth() - (2 * cMargin)) / 9F;
             mButtonSize = (getWidth() / 6F) - (2 * cButtonMargin);
             sDrawPlayField(pCanvas);
-            if (mGame.xGameData().xGameStatus() == GameData.cStatusPlay || mGame.xGameData().xGameStatus() == GameData.cStatusSetup){
+            if (mGame.xGameStatus() == SudokuGame.cStatusPlay || mGame.xGameStatus() == SudokuGame.cStatusSetup){
                 sDrawButtons(pCanvas);
                 mButtonsEnabled = true;
             } else {
@@ -182,7 +182,7 @@ public class SudokuView extends View {
             lRowMargin = (lRow * mCellSize) + cMargin;
             for (lColumn = 0; lColumn < 9; lColumn++) {
                 lColumnMargin = (lColumn * mCellSize) + cMargin;
-                lCell = mGame.xGameData().xCells()[(lRow * 9) + lColumn];
+                lCell = mGame.xPlayField().xCells()[(lRow * 9) + lColumn];
                 lRect = new RectF(lColumnMargin, lRowMargin, lColumnMargin + mCellSize, lRowMargin + mCellSize);
 
                 //      Background
@@ -250,7 +250,7 @@ public class SudokuView extends View {
         pCanvas.drawLine(cMargin, cMargin + (mCellSize * 6), (mCellSize * 9) + cMargin, cMargin + (mCellSize * 6), mPaint);
 
         mPaint.setStrokeWidth(cStrokeSelection);
-        pCanvas.drawRect((mGame.xGameData().xSelectionColumn() * mCellSize) + cMargin, (mGame.xGameData().xSelectionRow() * mCellSize) + cMargin, ((mGame.xGameData().xSelectionColumn() + 1) * mCellSize) + cMargin, ((mGame.xGameData().xSelectionRow() + 1) * mCellSize) + cMargin, mPaint);
+        pCanvas.drawRect((mGame.xPlayField().xSelectionColumn() * mCellSize) + cMargin, (mGame.xPlayField().xSelectionRow() * mCellSize) + cMargin, ((mGame.xPlayField().xSelectionColumn() + 1) * mCellSize) + cMargin, ((mGame.xPlayField().xSelectionRow() + 1) * mCellSize) + cMargin, mPaint);
     }
 
     private void sDrawButtons(Canvas pCanvas) {
@@ -271,7 +271,7 @@ public class SudokuView extends View {
             mButton[lCount] = lRectF;
             mPaint.setStrokeWidth(cStrokeNone);
             mPaint.setStyle(Paint.Style.FILL);
-            if (mGame.xGameData().xDigitCount(lCount) < 9) {
+            if (mGame.xPlayField().xDigitCount(lCount) < 9) {
                 mPaint.setColor(cColorButtonNorm);
             } else {
                 mPaint.setColor(cColorButtonFull);
@@ -292,14 +292,14 @@ public class SudokuView extends View {
             pCanvas.drawText(String.valueOf(lCount), lRectF.centerX(), lRectF.bottom - mPaint.getFontMetrics().descent, mPaint);
 
             mPaint.setTextSize(lCountSize);
-            pCanvas.drawText(String.valueOf(mGame.xGameData().xDigitCount(lCount)), lRectF.right - (lCountSize / 2), lRectF.top + lCountSize, mPaint);
+            pCanvas.drawText(String.valueOf(mGame.xPlayField().xDigitCount(lCount)), lRectF.right - (lCountSize / 2), lRectF.top + lCountSize, mPaint);
         }
         lRectF = sRectButton(99);
         mButton[0] = lRectF;
-        if (!mGame.xGameData().xSetUpMode()) {
+        if (!(mGame.xGameStatus() == SudokuGame.cStatusSetup)) {
             mPaint.setStrokeWidth(cStrokeNone);
             mPaint.setStyle(Paint.Style.FILL);
-            if (mGame.xGameData().xPencilMode()) {
+            if (mGame.xPlayField().xPencilMode()) {
                 mPaint.setColor(cColorButtonPencil);
             } else {
                 mPaint.setColor(cColorButtonNorm);

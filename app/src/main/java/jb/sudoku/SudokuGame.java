@@ -4,19 +4,106 @@ import android.os.AsyncTask;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
+
 class SudokuGame {
-    private GameData mGameData;
+    private boolean mLibraryMode;
+    private int mGameStatus;
+    static final int cStatusNone = 0;
+    static final int cStatusSetup = 1;
+    static final int cStatusGenerate = 2;
+    static final int cStatusPlay = 3;
+    static final int cStatusSolved = 4;
+    private int mDifficulty;
+    private int mUsedTime;
 
-    SudokuGame(GameData pGameData) {
-        mGameData = pGameData;
+    private List<PlayField> mPlayFields;
+    private PlayField mPlayField;
+
+    SudokuGame() {
+        mGameStatus = cStatusNone;
+        mLibraryMode = false;
+        mDifficulty = -1;
+        mUsedTime = 0;
+
+        mPlayField = new PlayField();
+        mPlayFields = new ArrayList<>();
+        mPlayFields.add(mPlayField);
     }
 
-    GameData xGameData() {
-        return mGameData;
+    SudokuGame(List<PlayField> pFields, boolean pSetUp, boolean pLib, int pDifficulty, int pSelectedField, int pUsedTime) {
+        mPlayFields = pFields;
+        if (mPlayFields.isEmpty()) {
+            mPlayField = new PlayField();
+            mPlayFields.add(mPlayField);
+        } else {
+            mPlayField = pFields.get(0);
+            if (mPlayField.xFieldId() != pSelectedField){
+                for (PlayField lField : mPlayFields) {
+                    if (lField.xFieldId() == pSelectedField){
+                        mPlayField = lField;
+                        break;
+                    }
+                }
+            }
+        }
+        mLibraryMode = pLib;
+        if (mPlayField.xEmptyField()) {
+            mGameStatus = cStatusNone;
+        } else {
+            if (pSetUp) {
+                mGameStatus = cStatusSetup;
+            } else {
+                if (mPlayField.xSolved()) {
+                    mGameStatus = cStatusSolved;
+                } else {
+                    mGameStatus = cStatusPlay;
+                }
+            }
+        }
+        mDifficulty = pDifficulty;
+        mUsedTime = pUsedTime;
     }
 
-    void xGameData(GameData pGameData) {
-        mGameData = pGameData;
+    PlayField xPlayField() {
+        return mPlayField;
+    }
+
+    List<PlayField> xPlayFields(){
+        return mPlayFields;
+    }
+
+    int xSelectedField() {
+        return mPlayField.xFieldId();
+    }
+
+    int xGameStatus() {
+        return mGameStatus;
+    }
+
+    int xUsedTime() {
+        return mUsedTime;
+    }
+
+    void xAddUsedTime(int pCorr) {
+        mUsedTime += pCorr;
+    }
+
+    void xResetUsedTime() {
+        mUsedTime = 0;
+    }
+
+    boolean xLibraryMode() {
+        return mLibraryMode;
+    }
+
+    int xDifficulty() {
+        return mDifficulty;
+    }
+
+    void xDifficulty(int pDifficulty) {
+        mDifficulty = pDifficulty;
     }
 
     boolean xSelectionValue(int pRow, int pColumn) {
@@ -25,9 +112,9 @@ class SudokuGame {
         boolean lResult;
 
         lResult = false;
-        lValue = mGameData.xSelectedCell().xValue();
+        lValue = mPlayField.xSelectedCell().xValue();
         if (lValue > 0) {
-            lCell = mGameData.xCell(pRow, pColumn);
+            lCell = mPlayField.xCell(pRow, pColumn);
             if (lCell.xValue() == lValue) {
                 lResult = true;
             } else {
@@ -42,51 +129,69 @@ class SudokuGame {
     }
 
     boolean xSelectionRange(int pRow, int pColumn) {
-        if (pRow == mGameData.xSelectionRow()) {
+        if (pRow == mPlayField.xSelectionRow()) {
             return true;
         }
-        if (pColumn == mGameData.xSelectionColumn()) {
+        if (pColumn == mPlayField.xSelectionColumn()) {
             return true;
         }
         //noinspection RedundantIfStatement
-        if ((pRow / 3) == (mGameData.xSelectionRow() / 3) && (pColumn / 3) == (mGameData.xSelectionColumn() / 3)) {
+        if ((pRow / 3) == (mPlayField.xSelectionRow() / 3) && (pColumn / 3) == (mPlayField.xSelectionColumn() / 3)) {
             return true;
         }
         return false;
     }
 
     void xStartSetUp() {
-        mGameData.xInitSetUp();
-    }
-
-    void xEndSetup() {
-        if (sCheckGame()) {
-            mGameData.xFinishSetup();
+        if (mGameStatus != cStatusSetup) {
+            mGameStatus = cStatusSetup;
+            mPlayField.xResetField();
+            mLibraryMode = false;
+            mDifficulty = -1;
         }
     }
 
-    void xNewGame(String pGame){
+    boolean xEndSetup() {
+        boolean lResult;
+
+        lResult = true;
+        if (mGameStatus == cStatusSetup) {
+            lResult = sCheckGame();
+            if (lResult) {
+                mPlayField.xFixField();
+            }
+        }
+        return lResult;
+    }
+
+    void xStartGame() {
+        mGameStatus = cStatusPlay;
+        xResetUsedTime();
+    }
+
+    void xNewGame(String pGame) {
         GameScrambler lScrambler;
         Cell[] lCells;
 
         lScrambler = new GameScrambler(pGame);
         lCells = lScrambler.xScrambleGame();
-        mGameData.xCells(lCells, true);
+        mPlayField.xCells(lCells);
+        mLibraryMode = true;
     }
 
-    String xGame(){
-        return mGameData.xGame();
+    String xGame() {
+        return mPlayField.xGame();
     }
 
     void xFillPencil() {
-        mGameData.xInitPencil();
+        mPlayField.xInitPencil();
         sPencilRows();
         sPencilColumns();
         sPencilSegments();
     }
 
     void xClearPencil() {
-        mGameData.xClearPencil();
+        mPlayField.xClearPencil();
     }
 
     boolean xSolve() {
@@ -95,11 +200,13 @@ class SudokuGame {
         boolean lResult;
 
         lSolver = new SudokuSolver();
-        lCells = lSolver.xSolve(mGameData.xCells());
+        lCells = lSolver.xSolve(mPlayField.xCells());
         if (lCells == null) {
+            mGameStatus = cStatusNone;
             lResult = false;
         } else {
-            mGameData.xCells(lCells);
+            mPlayField.xCells(lCells);
+            mGameStatus = cStatusSolved;
             lResult = true;
         }
         return lResult;
@@ -109,10 +216,14 @@ class SudokuGame {
         SudokuGenerator lGenerator;
         Cell[] lCells;
 
+        mGameStatus = cStatusGenerate;
+        mDifficulty = pLevel;
+
         lGenerator = new SudokuGenerator();
         lCells = lGenerator.xGenerate(pLevel, pTask);
         if (!(pTask != null && pTask.isCancelled())) {
-            mGameData.xCells(lCells, false );
+            mPlayField.xCells(lCells);
+            mLibraryMode = false;
         }
     }
 
@@ -120,15 +231,18 @@ class SudokuGame {
         PlayCell lCell;
 
         if (pDigit >= 1 && pDigit <= 9) {
-            lCell = mGameData.xSelectedCell();
-            if (mGameData.xPencilMode()) {
+            lCell = mPlayField.xSelectedCell();
+            if (mPlayField.xPencilMode()) {
                 lCell.xPencilFlip(pDigit);
             } else {
                 if (!lCell.xFixed()) {
-                    mGameData.xSetCellValue(pDigit);
-                    sPencilRow(mGameData.xSelectionRow());
-                    sPencilColumn(mGameData.xSelectionColumn());
-                    sPencilSegment(mGameData.xSelectionRow() / 3, mGameData.xSelectionColumn() / 3);
+                    mPlayField.xSetCellValue(pDigit);
+                    if (mPlayField.xSolved()) {
+                        mGameStatus = cStatusSolved;
+                    }
+                    sPencilRow(mPlayField.xSelectionRow());
+                    sPencilColumn(mPlayField.xSelectionColumn());
+                    sPencilSegment(mPlayField.xSelectionRow() / 3, mPlayField.xSelectionColumn() / 3);
                     sCheckGame();
                 }
             }
@@ -139,7 +253,7 @@ class SudokuGame {
         boolean lResult;
         boolean lResStep;
 
-        mGameData.xResetConflicts();
+        mPlayField.xResetConflicts();
         lResult = sCheckRows();
         lResStep = sCheckColumns();
         if (lResult) {
@@ -173,7 +287,7 @@ class SudokuGame {
         PlayCell[] lBlock = new PlayCell[9];
 
         for (lColumn = 0; lColumn < 9; lColumn++) {
-            lBlock[lColumn] = mGameData.xCell(pRow, lColumn);
+            lBlock[lColumn] = mPlayField.xCell(pRow, lColumn);
         }
         lResult = sCheckBlock(lBlock);
         return lResult;
@@ -200,7 +314,7 @@ class SudokuGame {
         boolean lResult;
 
         for (lRow = 0; lRow < 9; lRow++) {
-            lBlock[lRow] = mGameData.xCell(lRow, pColumn);
+            lBlock[lRow] = mPlayField.xCell(lRow, pColumn);
         }
         lResult = sCheckBlock(lBlock);
         return lResult;
@@ -234,7 +348,7 @@ class SudokuGame {
         lCell = 0;
         for (lRow = 0; lRow < 3; lRow++) {
             for (lColumn = 0; lColumn < 3; lColumn++) {
-                lBlock[lCell] = mGameData.xCells()[((pSegmentRow * 27) + (lRow * 9)) + (pSegmentColumn * 3) + lColumn];
+                lBlock[lCell] = mPlayField.xCells()[((pSegmentRow * 27) + (lRow * 9)) + (pSegmentColumn * 3) + lColumn];
                 lCell++;
             }
         }
@@ -275,7 +389,7 @@ class SudokuGame {
         PlayCell[] lBlock = new PlayCell[9];
 
         for (lColumn = 0; lColumn < 9; lColumn++) {
-            lBlock[lColumn] = mGameData.xCell(pRow, lColumn);
+            lBlock[lColumn] = mPlayField.xCell(pRow, lColumn);
         }
         sPencilBlock(lBlock);
     }
@@ -293,7 +407,7 @@ class SudokuGame {
         PlayCell[] lBlock = new PlayCell[9];
 
         for (lRow = 0; lRow < 9; lRow++) {
-            lBlock[lRow] = mGameData.xCell(lRow, pColumn);
+            lBlock[lRow] = mPlayField.xCell(lRow, pColumn);
         }
         sPencilBlock(lBlock);
     }
@@ -318,7 +432,7 @@ class SudokuGame {
         lCell = 0;
         for (lRow = 0; lRow < 3; lRow++) {
             for (lColumn = 0; lColumn < 3; lColumn++) {
-                lBlock[lCell] = mGameData.xCells()[((pSegmentRow * 27) + (lRow * 9)) + (pSegmentColumn * 3) + lColumn];
+                lBlock[lCell] = mPlayField.xCells()[((pSegmentRow * 27) + (lRow * 9)) + (pSegmentColumn * 3) + lColumn];
                 lCell++;
             }
         }
