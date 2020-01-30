@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/mnuGenerate"
@@ -69,6 +70,23 @@
             <item
                 android:onClick="hClearPencil"
                 android:title="@string/mnu_pencil_clear" />
+        </menu>
+    </item>
+    <item
+        android:id="@+id/mnuFields"
+        android:title="@string/mnu_fields" >
+        <menu>
+            <item
+                android:onClick="hFieldClone"
+                android:title="@string/mnu_field_clone" />
+            <item
+                android:id="@+id/mnuSwitch"
+                android:onClick="hFieldSwitch"
+                android:title="@string/mnu_field_switch" />
+            <item
+                android:id="@+id/mnuDelete"
+                android:onClick="hFieldDelete"
+                android:title="@string/mnu_field_delete" />
         </menu>
     </item>
 </menu>

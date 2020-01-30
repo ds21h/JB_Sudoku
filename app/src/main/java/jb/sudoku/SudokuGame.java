@@ -106,6 +106,44 @@ class SudokuGame {
         mDifficulty = pDifficulty;
     }
 
+    int xFieldCount(){
+        return mPlayFields.size();
+    }
+
+    private void sInitPlayFields(){
+        mPlayField = mPlayFields.get(0);
+        mPlayFields.clear();
+        mPlayFields.add(mPlayField);
+    }
+
+    void xPlayFieldClone(){
+        int lNewId;
+        PlayField lField;
+
+        lNewId = mPlayFields.get(mPlayFields.size() - 1).xFieldId() + 1;
+        lField = new PlayField(lNewId, mPlayField);
+        mPlayFields.add(lField);
+        mPlayField = lField;
+    }
+
+    void xSwitchPlayField(int pNewId){
+        for (PlayField lField : mPlayFields){
+            if (lField.xFieldId() == pNewId){
+                mPlayField = lField;
+                break;
+            }
+        }
+    }
+
+    void xDeleteCurrentPlayField(){
+        if (mPlayField.xFieldId() != 0){
+            if (mPlayFields.size() > 1){
+                mPlayFields.remove(mPlayField);
+                mPlayField = mPlayFields.get(0);
+            }
+        }
+    }
+
     boolean xSelectionValue(int pRow, int pColumn) {
         PlayCell lCell;
         int lValue;
@@ -145,6 +183,7 @@ class SudokuGame {
     void xStartSetUp() {
         if (mGameStatus != cStatusSetup) {
             mGameStatus = cStatusSetup;
+            sInitPlayFields();
             mPlayField.xResetField();
             mLibraryMode = false;
             mDifficulty = -1;
@@ -175,6 +214,7 @@ class SudokuGame {
 
         lScrambler = new GameScrambler(pGame);
         lCells = lScrambler.xScrambleGame();
+        sInitPlayFields();
         mPlayField.xCells(lCells);
         mLibraryMode = true;
     }
@@ -222,6 +262,7 @@ class SudokuGame {
         lGenerator = new SudokuGenerator();
         lCells = lGenerator.xGenerate(pLevel, pTask);
         if (!(pTask != null && pTask.isCancelled())) {
+            sInitPlayFields();
             mPlayField.xCells(lCells);
             mLibraryMode = false;
         }

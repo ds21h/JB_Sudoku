@@ -14,6 +14,11 @@ class Cell {
         mFixed = pFixed;
     }
 
+    Cell(Cell pCell){
+        mValue = pCell.mValue;
+        mFixed = pCell.mFixed;
+    }
+
     void xInitCell(Cell pCell){
         mValue = pCell.mValue;
         mFixed = pCell.mFixed;

@@ -2,6 +2,7 @@ package jb.sudoku;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -39,6 +40,7 @@ public class SudokuView extends View {
     private float mCellSize;
     private float mButtonSize;
 
+    private Context mContext;
     private SudokuGame mGame = null;
     private RectF[] mButton = new RectF[10];
     private boolean mButtonsEnabled;
@@ -48,11 +50,13 @@ public class SudokuView extends View {
 
     public SudokuView(Context pContext) {
         super(pContext);
+        mContext = pContext;
         sInit();
     }
 
     public SudokuView(Context pContext, AttributeSet pAttrSet) {
         super(pContext, pAttrSet);
+        mContext = pContext;
         sInit();
     }
 
@@ -251,6 +255,17 @@ public class SudokuView extends View {
 
         mPaint.setStrokeWidth(cStrokeSelection);
         pCanvas.drawRect((mGame.xPlayField().xSelectionColumn() * mCellSize) + cMargin, (mGame.xPlayField().xSelectionRow() * mCellSize) + cMargin, ((mGame.xPlayField().xSelectionColumn() + 1) * mCellSize) + cMargin, ((mGame.xPlayField().xSelectionRow() + 1) * mCellSize) + cMargin, mPaint);
+
+        if (mGame.xFieldCount() > 1){
+            mPaint.setStrokeWidth(cStrokeNarrow);
+            mPaint.setStyle(Paint.Style.FILL);
+            mPaint.setTextSize(mCellSize * 0.4F);
+            mPaint.setTextAlign(Paint.Align.RIGHT);
+            mPaint.setColor(cColorForeNorm);
+            mPaint.setAlpha(lAlpha);
+            pCanvas.drawText(String.valueOf(mGame.xPlayField().xFieldId()), cMargin + (mCellSize * 9),  (mCellSize * 9) - mPaint.getFontMetrics().top + (cMargin * 2), mPaint);
+            mPaint.setTextAlign(Paint.Align.CENTER);
+        }
     }
 
     private void sDrawButtons(Canvas pCanvas) {
@@ -317,7 +332,7 @@ public class SudokuView extends View {
             mPaint.setTextSize(mCellSize);
             mPaint.setStyle(Paint.Style.FILL);
             mPaint.setAlpha(lAlpha);
-            pCanvas.drawText("P", lRectF.centerX(), lRectF.bottom - mPaint.getFontMetrics().descent, mPaint);
+            pCanvas.drawText(mContext.getString(R.string.vw_pencil) , lRectF.centerX(), lRectF.bottom - mPaint.getFontMetrics().descent, mPaint);
         }
     }
 
