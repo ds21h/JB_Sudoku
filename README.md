@@ -9,6 +9,13 @@ If you have any questions or remarks please send me a mail on ds21h@hotmail.com
 
 History
 
+Version 1.1 - 30-01-2020
+-   Multiple playing fields
+    - Extra menu option to manage PlayFields
+    - Functions: Clone current PlayField in a new one, Switch between PlayFields and Delete current Playfield
+    - Playfield 0 cannot be deleted
+    - If multiple playfields exist an indicator is included under the playfield.
+
 Version 1.0 - 09-03-2019
 -   Complete game
 -   two ways to create games:
