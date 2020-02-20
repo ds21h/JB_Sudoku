@@ -21,3 +21,6 @@ Version 1.1 - 30-01-2020
     - Functions: Clone current PlayField in a new one, Switch between PlayFields and Delete current Playfield
     - Playfield 0 cannot be deleted
     - If multiple playfields exist an indicator is included under the playfield.
+
+Version 1.1.1 - 20-02-2020
+-   After deleting a playfield the highest remaining playfield is selected instead of 0.

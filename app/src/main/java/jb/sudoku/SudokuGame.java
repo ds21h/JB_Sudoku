@@ -139,7 +139,7 @@ class SudokuGame {
         if (mPlayField.xFieldId() != 0){
             if (mPlayFields.size() > 1){
                 mPlayFields.remove(mPlayField);
-                mPlayField = mPlayFields.get(0);
+                mPlayField = mPlayFields.get(mPlayFields.size() - 1);
             }
         }
     }
