@@ -294,13 +294,13 @@ class Data extends SQLiteOpenHelper {
         return lCells;
     }
 
-    void xSaveGame(SudokuGame pGame){
+    void xSaveGameO(SudokuGame pGame){
         PlayCell[] lCells;
         int lCount;
         List<PlayField> lFields;
 
         sUpdateGameContext(pGame);
-        sDeleteFields();
+        xDeleteSave();
         lFields = pGame.xPlayFields();
         for(PlayField lField : lFields){
             sNewFieldContext(lField);
@@ -311,7 +311,45 @@ class Data extends SQLiteOpenHelper {
         }
     }
 
-    private void sDeleteFields(){
+    void xSaveGame(SudokuGame pGame){
+        List<PlayField> lFields;
+
+        sUpdateGameContext(pGame);
+        xSavePlayField(pGame.xPlayField());
+    }
+
+    void xSavePlayField(PlayField pField){
+        PlayCell[] lCells;
+        int lCount;
+
+        xDeletePlayField(pField.xFieldId());
+        sNewFieldContext(pField);
+        lCells = pField.xCells();
+        for(lCount = 0; lCount < lCells.length; lCount++){
+            sNewCell(pField.xFieldId(), lCount,  lCells[lCount]);
+        }
+    }
+
+    void xDeletePlayField(int pPlayFieldId){
+        SQLiteDatabase lDB;
+        String lSelection;
+        String[] lSelectionArgs;
+
+        lSelection = "FieldId = ?";
+        lSelectionArgs = new String[1];
+        lSelectionArgs[0] = String.valueOf(pPlayFieldId);
+
+        lDB = this.getWritableDatabase();
+
+        lDB.delete("FieldContext", lSelection, lSelectionArgs);
+
+        lDB.delete("Cell", lSelection, lSelectionArgs);
+
+        lDB.close();
+
+    }
+
+    void xDeleteSave(){
         SQLiteDatabase lDB;
 
         lDB = this.getWritableDatabase();

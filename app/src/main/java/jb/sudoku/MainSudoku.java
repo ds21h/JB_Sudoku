@@ -104,7 +104,6 @@ public class MainSudoku extends Activity {
 
         mHeader = "";
         mGenerator = null;
-//        mGameData = new GameData();
         mGame = new SudokuGame();
         mSdkView = findViewById(R.id.svMain);
         mSdkView.setGame(mGame);
@@ -293,6 +292,7 @@ public class MainSudoku extends Activity {
     }
 
     public void hSetupStart(MenuItem pItem) {
+        mData.xDeleteSave();
         mGame.xStartSetUp();
         mSdkView.invalidate();
     }
@@ -345,6 +345,7 @@ public class MainSudoku extends Activity {
     }
 
     private void sGenerate(int pLevel) {
+        mData.xDeleteSave();
         if (mGenerator != null) {
             if (mGenerator.getStatus() == AsyncTask.Status.FINISHED) {
                 mGenerator = null;
@@ -385,6 +386,7 @@ public class MainSudoku extends Activity {
     private void sNew() {
         String lGame;
 
+        mData.xDeleteSave();
         lGame = mData.xRandomGame(mGame.xDifficulty());
         if (lGame == null) {
             Toast.makeText(mContext, R.string.msg_no_game, Toast.LENGTH_SHORT).show();
@@ -413,11 +415,13 @@ public class MainSudoku extends Activity {
     }
 
     public void hFieldClone(MenuItem pItem){
+        mData.xSavePlayField(mGame.xPlayField());
         mGame.xPlayFieldClone();
         mSdkView.invalidate();
     }
 
     public void hFieldDelete(MenuItem pItem){
+        mData.xDeletePlayField(mGame.xPlayField().xFieldId());
         mGame.xDeleteCurrentPlayField();
         mSdkView.invalidate();
     }
@@ -458,6 +462,7 @@ public class MainSudoku extends Activity {
     }
 
     private void sSwitchPlayField(int pNewId){
+        mData.xSavePlayField(mGame.xPlayField());
         mGame.xSwitchPlayField(pNewId);
         mSdkView.invalidate();
     }

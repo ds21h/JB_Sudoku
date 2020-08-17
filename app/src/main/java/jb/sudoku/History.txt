@@ -24,3 +24,14 @@ Version 1.1 - 30-01-2020
 
 Version 1.1.1 - 20-02-2020
 -   After deleting a playfield the highest remaining playfield is selected instead of 0.
+
+Version 1.1.2 - 23-02-2020
+-   Changed saving strategy. It appeared that saving didn't always function well. Probably because too much work was done during OnPause.
+    Now saving is more proactive:
+    -   When new game is created the whole saved game is deleted
+    -   When leaving the focus of a PlayField (clone or switch) the 'old' PlayField is saved
+    -   When deleting a PlayField the saved version is also deleted
+    -   In the OnPause function only the current PlayField is saved
+
+Version 1.1.3 - 17-08-2020 - Not yet published
+-   On creating a new game (setup, generate or library) the field_id of the remaining playfield is reset to 0. Otherwise an error hereoff (should not be possible) will never be corrected.

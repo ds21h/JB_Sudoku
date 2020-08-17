@@ -102,6 +102,10 @@ class PlayField {
         return mFieldId;
     }
 
+    void xResetFieldId(){
+        mFieldId = 0;
+    }
+
     boolean xPencilMode() {
         return mPencilMode;
     }

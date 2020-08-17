@@ -112,6 +112,7 @@ class SudokuGame {
 
     private void sInitPlayFields(){
         mPlayField = mPlayFields.get(0);
+        mPlayField.xResetFieldId();
         mPlayFields.clear();
         mPlayFields.add(mPlayField);
     }
