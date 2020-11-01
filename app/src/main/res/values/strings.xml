@@ -21,4 +21,10 @@
     <string name="mnu_pencil">Pencil</string>
     <string name="mnu_pencil_fill">Fill</string>
     <string name="mnu_pencil_clear">Clear</string>
+    <string name="mnu_fields">PlayFields</string>
+    <string name="mnu_field_clone">Clone</string>
+    <string name="mnu_field_switch">Switch</string>
+    <string name="mnu_field_delete">Delete</string>
+    <string name="vw_pencil">P</string>
+    <string name="mnu_pencil_auto">Auto adjust</string>
 </resources>

@@ -37,6 +37,12 @@ class PlayCell extends Cell {
         }
     }
 
+    PlayCell(PlayCell pCell){
+        super(pCell);
+        mConflict = pCell.mConflict;
+        mPencil = pCell.mPencil.clone();
+    }
+
     @Override
     void xInitCell(Cell pCell) {
         super.xInitCell(pCell);

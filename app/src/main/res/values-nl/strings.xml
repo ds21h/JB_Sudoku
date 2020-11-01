@@ -22,4 +22,10 @@
     <string name="mnu_pencil">Potlood</string>
     <string name="mnu_pencil_fill">Vullen</string>
     <string name="mnu_pencil_clear">Wissen</string>
+    <string name="mnu_fields">SpeelVelden</string>
+    <string name="mnu_field_clone">Kloon</string>
+    <string name="mnu_field_switch">Wissel</string>
+    <string name="mnu_field_delete">Verwijder</string>
+    <string name="vw_pencil">P</string>
+    <string name="mnu_pencil_auto">Auto aanpassen</string>
 </resources>
