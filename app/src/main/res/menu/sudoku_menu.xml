@@ -7,13 +7,16 @@
         android:title="@string/mnu_generate">
         <menu>
             <item
-                android:onClick="hGenerate1"
+                android:id="@+id/mnuGenEasy"
+                android:onClick="hGenerate"
                 android:title="@string/mnu_level_easy" />
             <item
-                android:onClick="hGenerate2"
+                android:id="@+id/mnuGenMed"
+                android:onClick="hGenerate"
                 android:title="@string/mnu_level_medium" />
             <item
-                android:onClick="hGenerate3"
+                android:id="@+id/mnuGenHard"
+                android:onClick="hGenerate"
                 android:title="@string/mnu_level_hard" />
         </menu>
     </item>
@@ -22,19 +25,24 @@
         android:title="@string/mnu_new">
         <menu>
             <item
-                android:onClick="hNew0"
+                android:id="@+id/mnuNewVE"
+                android:onClick="hNew"
                 android:title="@string/mnu_level_very_easy" />
             <item
-                android:onClick="hNew1"
+                android:id="@+id/mnuNewE"
+                android:onClick="hNew"
                 android:title="@string/mnu_level_easy" />
             <item
-                android:onClick="hNew2"
+                android:id="@+id/mnuNewM"
+                android:onClick="hNew"
                 android:title="@string/mnu_level_medium" />
             <item
-                android:onClick="hNew3"
+                android:id="@+id/mnuNewH"
+                android:onClick="hNew"
                 android:title="@string/mnu_level_hard" />
             <item
-                android:onClick="hNew4"
+                android:id="@+id/mnuNewVH"
+                android:onClick="hNew"
                 android:title="@string/mnu_level_very_hard" />
         </menu>
     </item>
@@ -64,6 +72,11 @@
         android:id="@+id/mnuPencil"
         android:title="@string/mnu_pencil">
         <menu >
+            <item
+                android:id="@+id/mnuPencilAuto"
+                android:checkable="true"
+                android:onClick="hAutoPencil"
+                android:title="@string/mnu_pencil_auto" />
             <item
                 android:onClick="hFillPencil"
                 android:title="@string/mnu_pencil_fill" />

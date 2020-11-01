@@ -35,3 +35,16 @@ Version 1.1.2 - 23-02-2020
 
 Version 1.1.3 - 17-08-2020 - Not yet published
 -   On creating a new game (setup, generate or library) the field_id of the remaining playfield is reset to 0. Otherwise an error hereoff (should not be possible) will never be corrected.
+
+Version 1.2 - 01-11-2020
+-   Minimum API level changed to 19 (Android 4.4 - KitKat)
+-   Changed compatibility libraries to AndroidX
+-   Split SudokuGame in two Classes:
+    - SudokuGameBase which has all the playing functionality
+    - SudokuGame which inherits SudokuGameBase and has all the multi-Playfield functionality
+-   Moved the save action from onPause to onStop
+-   Moved the restore action from onResume to onStart
+-   Save actions are now processed on a different thread in order to enhance responsiveness
+-   AutoPencil mode can be turned off
+-   When auto pencil is enabled and a cellselection is changed or erased (not added!) all pencilentries are erased as they then become unreliable.
+-   Exception: When an empty cell is filled and marked as erronious en then erased the pencil entries are not erased.

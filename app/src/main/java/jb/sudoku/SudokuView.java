@@ -110,8 +110,7 @@ public class SudokuView extends View {
                             lRow = (int) (lDispl / mCellSize);
                             if (lRow < 9) {
                                 lCellSelect = true;
-                                mGame.xPlayField().xSelectionRow(lRow);
-                                mGame.xPlayField().xSelectionColumn(lColumn);
+                                mGame.xSelectCell(lRow, lColumn);
                                 invalidate();
                             }
                         }

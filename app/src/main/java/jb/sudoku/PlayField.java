@@ -6,6 +6,7 @@ class PlayField {
     private int mFieldId;
     private PlayCell[] mCells;
     private boolean mPencilMode;
+    private boolean mPencilAuto;
     private int mSelection;
     private int mSelectionRow;
     private int mSelectionColumn;
@@ -25,6 +26,7 @@ class PlayField {
             mDigitCount[lCount] = 0;
         }
         mPencilMode = false;
+        mPencilAuto = true;
         mSelection = 0;
         mSelectionRow = 0;
         mSelectionColumn = 0;
@@ -45,12 +47,21 @@ class PlayField {
         }
         sDigitCount();
         mPencilMode = pPencil;
+        mPencilAuto = true;
         mSelection = pSelection;
         mSelectionRow = mSelection / 9;
         mSelectionColumn = mSelection % 9;
     }
 
+    PlayField (PlayField pField){
+        sPlayFieldInit(pField.mFieldId, pField);
+    }
+
     PlayField(int pFieldId, PlayField pField){
+        sPlayFieldInit(pFieldId, pField);
+    }
+
+    private void sPlayFieldInit(int pFieldId, PlayField pField){
         int lCount;
 
         mFieldId = pFieldId;
@@ -59,6 +70,7 @@ class PlayField {
             mCells[lCount] = new PlayCell(pField.mCells[lCount]);
         }
         mPencilMode = pField.mPencilMode;
+        mPencilAuto = pField.mPencilAuto;
         mSelection = pField.mSelection;
         mSelectionRow = mSelection / 9;
         mSelectionColumn = mSelection % 9;
@@ -112,6 +124,14 @@ class PlayField {
 
     void xPencilFlip() {
         mPencilMode = !mPencilMode;
+    }
+
+    boolean xPencilAuto(){
+        return mPencilAuto;
+    }
+
+    void xFlipPencilAuto(){
+        mPencilAuto = !mPencilAuto;
     }
 
     PlayCell xSelectedCell() {
@@ -196,14 +216,16 @@ class PlayField {
         return lBuilder.toString();
     }
 
-    void xSetCellValue(int pValue) {
+    boolean xSetCellValue(int pValue) {
         PlayCell lCell;
+        boolean lValueSet;
 
         lCell = mCells[mSelection];
         if (lCell.xValue() == pValue) {
             lCell.xValueReset();
             mDigitCount[0]++;
             mDigitCount[pValue]--;
+            lValueSet = false;
         } else {
             if (lCell.xValue() == 0) {
                 mDigitCount[0]--;
@@ -212,7 +234,9 @@ class PlayField {
             }
             lCell.xValue(pValue);
             mDigitCount[pValue]++;
+            lValueSet = true;
         }
+        return lValueSet;
     }
 
 

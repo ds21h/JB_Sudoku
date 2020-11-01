@@ -29,16 +29,23 @@ class Data extends SQLiteOpenHelper {
          * this will ensure that you dont accidentally leak an Activitys
          * context (see this article for more information:
          * http://developer.android.com/resources/articles/avoiding-memory-leaks.html)
+         *
+         * use double-check locking for thread-safe initialization.
+         * see https://www.geeksforgeeks.org/java-singleton-design-pattern-practices-examples/
          */
         if (mInstance == null) {
-            lContext = pContext.getApplicationContext();
-            lExternalFilesDir = lContext.getExternalFilesDir(null);
-            if (lExternalFilesDir == null){
-                mExternalFilesDir = "";
-            } else {
-                mExternalFilesDir = lExternalFilesDir.getAbsolutePath();
+            synchronized(Data.class){
+                if (mInstance == null){
+                    lContext = pContext.getApplicationContext();
+                    lExternalFilesDir = lContext.getExternalFilesDir(null);
+                    if (lExternalFilesDir == null) {
+                        mExternalFilesDir = "";
+                    } else {
+                        mExternalFilesDir = lExternalFilesDir.getAbsolutePath();
+                    }
+                    mInstance = new Data(lContext);
+                }
             }
-            mInstance = new Data(lContext);
         }
         return mInstance;
     }
@@ -311,9 +318,7 @@ class Data extends SQLiteOpenHelper {
         }
     }
 
-    void xSaveGame(SudokuGame pGame){
-        List<PlayField> lFields;
-
+    void xSaveGame(SudokuGameBase pGame){
         sUpdateGameContext(pGame);
         xSavePlayField(pGame.xPlayField());
     }
@@ -377,7 +382,7 @@ class Data extends SQLiteOpenHelper {
         lDB.close();
     }
 
-    private void sUpdateGameContext(SudokuGame pGame){
+    private void sUpdateGameContext(SudokuGameBase pGame){
         SQLiteDatabase lDB;
         ContentValues lValues;
         String lSelection;
@@ -389,7 +394,7 @@ class Data extends SQLiteOpenHelper {
         lValues.put("SetUp", (pGame.xGameStatus() == SudokuGame.cStatusSetup) ? 1 : 0);
         lValues.put("Lib", (pGame.xLibraryMode()) ? 1 : 0);
         lValues.put("Difficulty", pGame.xDifficulty());
-        lValues.put("SelectedField", pGame.xSelectedField());
+        lValues.put("SelectedField", pGame.xPlayField().xFieldId());
         lValues.put("UsedTime", pGame.xUsedTime());
         lSelection = "ContextId = ?";
         lSelectionArgs = new String[] {"Game"};
