@@ -9,7 +9,7 @@ If you have any questions or remarks please send me a mail on ds21h@hotmail.com
 
 History
 
-Version 1.2 - 01-11-2020
+Version 1.2 - 05-11-2020
 -   Minimum API level changed to 19 (Android 4.4 - KitKat)
 -   Changed compatibility libraries to AndroidX
 -   Split SudokuGame in two Classes:
@@ -20,7 +20,7 @@ Version 1.2 - 01-11-2020
 -   Save actions are now processed on a different thread in order to enhance responsiveness
 -   AutoPencil mode can be turned off
 -   When auto pencil is enabled and a cellselection is changed or erased (not added!) all pencilentries are erased as they then become unreliable.
--   Exception: When an empty cell is filled and marked as erronious en then erased the pencil entries are not erased.
+-   Exception: When an empty cell is filled and marked as erroneous en then erased the pencil entries are not erased.
 
 Version 1.1 - 30-01-2020
 -   Multiple playing fields

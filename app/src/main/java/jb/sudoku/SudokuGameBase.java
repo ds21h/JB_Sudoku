@@ -218,7 +218,7 @@ class SudokuGameBase {
     }
 
     void xSelectCell(int pRow, int pColumn){
-        if (pRow != mPlayField.xSelectionRow() || pColumn == mPlayField.xSelectionColumn()){
+        if (pRow != mPlayField.xSelectionRow() || pColumn != mPlayField.xSelectionColumn()){
             mPencilSafe = false;
             mPlayField.xSelectionRow(pRow);
             mPlayField.xSelectionColumn(pColumn);
