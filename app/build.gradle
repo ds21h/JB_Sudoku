@@ -6,8 +6,8 @@ android {
         applicationId "jb.sudoku"
         minSdkVersion 19
         targetSdkVersion 30
-        versionCode 10200
-        versionName "1.2"
+        versionCode 10201
+        versionName "1.2.1"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     buildTypes {
