@@ -49,3 +49,5 @@ Version 1.2 - 05-11-2020
 -   When auto pencil is enabled and a cellselection is changed or erased (not added!) all pencilentries are erased as they then become unreliable.
 -   Exception: When an empty cell is filled and marked as erroneous en then erased the pencil entries are not erased.
 
+Version 1.2.1 - 18-02-2021
+-   Introduced transactions on the DB. The multi-threaded approach introduced in Version 1.2 sometimes caused problems with simultaneous access.

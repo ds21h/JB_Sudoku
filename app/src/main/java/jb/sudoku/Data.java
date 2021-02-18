@@ -21,6 +21,8 @@ class Data extends SQLiteOpenHelper {
     private static final int cDBVersion = 4;
     private static String mExternalFilesDir;
 
+    private SQLiteDatabase mDB;
+
     static Data getInstance(Context pContext) {
         Context lContext;
         File lExternalFilesDir;
@@ -56,6 +58,7 @@ class Data extends SQLiteOpenHelper {
      */
     private Data(Context pContext) {
         super(pContext, mExternalFilesDir + "/" + cDBName, null, cDBVersion);
+        mDB = this.getWritableDatabase();
     }
 
     @Override
@@ -187,7 +190,7 @@ class Data extends SQLiteOpenHelper {
     SudokuGame xCurrentGame(){
         List<PlayField> lFields;
         SudokuGame lGame;
-        SQLiteDatabase lDB;
+//        SQLiteDatabase lDB;
         Cursor lCursor;
         String[] lColumns;
         String lSelection;
@@ -200,14 +203,14 @@ class Data extends SQLiteOpenHelper {
 
         lFields = sGetFields();
 
-        lDB = this.getReadableDatabase();
+//        lDB = this.getReadableDatabase();
 
         lColumns = new String[] {"SetUp", "Lib", "Difficulty", "SelectedField", "UsedTime"};
         lSelection = "ContextId = ?";
         lSelectionArgs = new String[] {"Game"};
 
         try{
-            lCursor = lDB.query("GameContext", lColumns, lSelection, lSelectionArgs, null, null, null);
+            lCursor = mDB.query("GameContext", lColumns, lSelection, lSelectionArgs, null, null, null);
             if (lCursor.moveToNext()){
                 lSetUp = lCursor.getInt(0);
                 lLib = lCursor.getInt(1);
@@ -219,7 +222,7 @@ class Data extends SQLiteOpenHelper {
         } catch (Exception pExc){
             int A = 1;
         }
-        lDB.close();
+//        lDB.close();
 
         lGame = new SudokuGame(lFields, (lSetUp == 0) ? false : true, (lLib == 0) ? false : true, lDifficulty, lSelectedField, lUsedTime);
         return lGame;
@@ -229,7 +232,7 @@ class Data extends SQLiteOpenHelper {
         List<PlayField> lFields;
         PlayField lField;
         List<DbCell> lCells;
-        SQLiteDatabase lDB;
+//        SQLiteDatabase lDB;
         Cursor lCursor;
         String[] lColumns;
         String lSequence;
@@ -239,12 +242,12 @@ class Data extends SQLiteOpenHelper {
 
         lFields = new ArrayList<>();
 
-        lDB = this.getReadableDatabase();
+//        lDB = this.getReadableDatabase();
 
         lColumns = new String[] {"FieldId", "Selection", "Pencil"};
         lSequence = "FieldId";
 
-        lCursor = lDB.query("FieldContext", lColumns, null, null, null, null, lSequence);
+        lCursor = mDB.query("FieldContext", lColumns, null, null, null, null, lSequence);
         while (lCursor.moveToNext()){
             lFieldId = lCursor.getInt(0);
             lSel = lCursor.getInt(1);
@@ -262,7 +265,7 @@ class Data extends SQLiteOpenHelper {
     private List<DbCell> sCells(int pFieldId){
         List<DbCell> lCells;
         DbCell lCell;
-        SQLiteDatabase lDB;
+//        SQLiteDatabase lDB;
         Cursor lCursor;
         String[] lColumns;
         String lSelection;
@@ -282,9 +285,9 @@ class Data extends SQLiteOpenHelper {
 
         lCells = new ArrayList<>();
 
-        lDB = this.getReadableDatabase();
+//        lDB = this.getReadableDatabase();
 
-        lCursor = lDB.query("Cell", lColumns, lSelection, lSelectionArgs, null, null, lSequence);
+        lCursor = mDB.query("Cell", lColumns, lSelection, lSelectionArgs, null, null, lSequence);
         while (lCursor.moveToNext()){
             lCellNumber = lCursor.getInt(0);
             lValue = lCursor.getInt(1);
@@ -296,12 +299,12 @@ class Data extends SQLiteOpenHelper {
             lCells.add(lCell);
         }
         lCursor.close();
-        lDB.close();
+//        lDB.close();
 
         return lCells;
     }
 
-    void xSaveGameO(SudokuGame pGame){
+/*    void xSaveGameO(SudokuGame pGame){
         PlayCell[] lCells;
         int lCount;
         List<PlayField> lFields;
@@ -316,18 +319,28 @@ class Data extends SQLiteOpenHelper {
                 sNewCell(lField.xFieldId(), lCount,  lCells[lCount]);
             }
         }
-    }
+    } */
 
     void xSaveGame(SudokuGameBase pGame){
+        mDB.beginTransaction();
         sUpdateGameContext(pGame);
-        xSavePlayField(pGame.xPlayField());
+        sSavePlayField(pGame.xPlayField());
+        mDB.setTransactionSuccessful();
+        mDB.endTransaction();
     }
 
     void xSavePlayField(PlayField pField){
+        mDB.beginTransaction();
+        sSavePlayField(pField);
+        mDB.setTransactionSuccessful();
+        mDB.endTransaction();
+    }
+
+    private void sSavePlayField(PlayField pField){
         PlayCell[] lCells;
         int lCount;
 
-        xDeletePlayField(pField.xFieldId());
+        sDeletePlayField(pField.xFieldId());
         sNewFieldContext(pField);
         lCells = pField.xCells();
         for(lCount = 0; lCount < lCells.length; lCount++){
@@ -336,7 +349,14 @@ class Data extends SQLiteOpenHelper {
     }
 
     void xDeletePlayField(int pPlayFieldId){
-        SQLiteDatabase lDB;
+        mDB.beginTransaction();
+        sDeletePlayField(pPlayFieldId);
+        mDB.setTransactionSuccessful();
+        mDB.endTransaction();
+    }
+
+    private void sDeletePlayField(int pPlayFieldId){
+//        SQLiteDatabase lDB;
         String lSelection;
         String[] lSelectionArgs;
 
@@ -344,51 +364,49 @@ class Data extends SQLiteOpenHelper {
         lSelectionArgs = new String[1];
         lSelectionArgs[0] = String.valueOf(pPlayFieldId);
 
-        lDB = this.getWritableDatabase();
+//        lDB = this.getWritableDatabase();
 
-        lDB.delete("FieldContext", lSelection, lSelectionArgs);
+        mDB.delete("FieldContext", lSelection, lSelectionArgs);
 
-        lDB.delete("Cell", lSelection, lSelectionArgs);
+        mDB.delete("Cell", lSelection, lSelectionArgs);
 
-        lDB.close();
-
+//        lDB.close();
     }
 
     void xDeleteSave(){
-        SQLiteDatabase lDB;
+//        SQLiteDatabase lDB;
+        mDB.beginTransaction();
+        mDB.delete("FieldContext", null, null);
+        mDB.delete("Cell", null, null);
+        mDB.setTransactionSuccessful();
+        mDB.endTransaction();
 
-        lDB = this.getWritableDatabase();
-
-        lDB.delete("FieldContext", null, null);
-
-        lDB.delete("Cell", null, null);
-
-        lDB.close();
+//        lDB.close();
     }
 
     private void sNewFieldContext(PlayField pField){
         SQLiteDatabase lDB;
         ContentValues lValues;
 
-        lDB = this.getWritableDatabase();
+//        lDB = this.getWritableDatabase();
 
         lValues = new ContentValues();
         lValues.put("FieldId", pField.xFieldId());
         lValues.put("Selection", pField.xSelection());
         lValues.put("Pencil", (pField.xPencilMode()) ? 1 : 0);
 
-        lDB.insert("FieldContext", null, lValues);
+        mDB.insert("FieldContext", null, lValues);
 
-        lDB.close();
+//        lDB.close();
     }
 
     private void sUpdateGameContext(SudokuGameBase pGame){
-        SQLiteDatabase lDB;
+//        SQLiteDatabase lDB;
         ContentValues lValues;
         String lSelection;
         String[] lSelectionArgs;
 
-        lDB = this.getWritableDatabase();
+//        lDB = this.getWritableDatabase();
 
         lValues = new ContentValues();
         lValues.put("SetUp", (pGame.xGameStatus() == SudokuGame.cStatusSetup) ? 1 : 0);
@@ -399,15 +417,15 @@ class Data extends SQLiteOpenHelper {
         lSelection = "ContextId = ?";
         lSelectionArgs = new String[] {"Game"};
 
-        lDB.update("GameContext", lValues, lSelection, lSelectionArgs);
-        lDB.close();
+        mDB.update("GameContext", lValues, lSelection, lSelectionArgs);
+//        lDB.close();
     }
 
     private void sNewCell(int pFieldId, int pCellNumber, PlayCell pCell){
-        SQLiteDatabase lDB;
+//        SQLiteDatabase lDB;
         ContentValues lValues;
 
-        lDB = this.getWritableDatabase();
+//        lDB = this.getWritableDatabase();
 
         lValues = new ContentValues();
         lValues.put("FieldId", pFieldId);
@@ -417,14 +435,14 @@ class Data extends SQLiteOpenHelper {
         lValues.put("Confl", (pCell.xConflict()) ? 1 : 0);
         lValues.put("Pencil", pCell.xPencils());
 
-        lDB.insert("Cell", null, lValues);
+        mDB.insert("Cell", null, lValues);
 
-        lDB.close();
+//        lDB.close();
     }
 
     String xRandomGame(int pLevel){
         String lGame = null;
-        SQLiteDatabase lDB;
+//        SQLiteDatabase lDB;
         Cursor lCursor;
         String[] lColumns;
         String lSelection;
@@ -438,30 +456,33 @@ class Data extends SQLiteOpenHelper {
         lSequence = "RANDOM()";
         lLimit = "1";
 
-        lDB = this.getReadableDatabase();
+//        lDB = this.getReadableDatabase();
 
-        lCursor = lDB.query("Game", lColumns, lSelection, lSelectionArgs, null, null, lSequence, lLimit);
+        lCursor = mDB.query("Game", lColumns, lSelection, lSelectionArgs, null, null, lSequence, lLimit);
         if (lCursor.moveToNext()){
             lGame = lCursor.getString(0);
         }
         lCursor.close();
-        lDB.close();
+//        lDB.close();
 
         return lGame;
     }
 
     void xNewGame(int pLevel, String pGame){
-        SQLiteDatabase lDB;
+//        SQLiteDatabase lDB;
         ContentValues lValues;
 
-        lDB = this.getWritableDatabase();
+//        lDB = this.getWritableDatabase();
+        mDB.beginTransaction();
 
         lValues = new ContentValues();
         lValues.put("Level", pLevel);
         lValues.put("Game", pGame);
 
-        lDB.insert("Game", null, lValues);
+        mDB.insert("Game", null, lValues);
 
-        lDB.close();
+        mDB.setTransactionSuccessful();
+        mDB.endTransaction();
+//        lDB.close();
     }
 }

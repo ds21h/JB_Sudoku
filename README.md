@@ -9,6 +9,9 @@ If you have any questions or remarks please send me a mail on ds21h@hotmail.com
 
 History
 
+Version 1.2.1 - 18-02-2021
+-   Introduced transactions on the DB. The multi-threaded approach introduced in Version 1.2 sometimes caused problems with simultaneous access.
+
 Version 1.2 - 05-11-2020
 -   Minimum API level changed to 19 (Android 4.4 - KitKat)
 -   Changed compatibility libraries to AndroidX
