@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/mnuGenerate"
-        android:title="@string/mnu_generate">
+        android:id="@+id/mnuNew"
+        android:title="@string/mnu_new">
         <menu>
             <item
                 android:id="@+id/mnuGenEasy"
@@ -21,32 +21,6 @@
         </menu>
     </item>
     <item
-        android:id="@+id/mnuNew"
-        android:title="@string/mnu_new">
-        <menu>
-            <item
-                android:id="@+id/mnuNewVE"
-                android:onClick="hNew"
-                android:title="@string/mnu_level_very_easy" />
-            <item
-                android:id="@+id/mnuNewE"
-                android:onClick="hNew"
-                android:title="@string/mnu_level_easy" />
-            <item
-                android:id="@+id/mnuNewM"
-                android:onClick="hNew"
-                android:title="@string/mnu_level_medium" />
-            <item
-                android:id="@+id/mnuNewH"
-                android:onClick="hNew"
-                android:title="@string/mnu_level_hard" />
-            <item
-                android:id="@+id/mnuNewVH"
-                android:onClick="hNew"
-                android:title="@string/mnu_level_very_hard" />
-        </menu>
-    </item>
-    <item
         android:id="@+id/mnuSetup"
         android:title="@string/mnu_setup">
         <menu>
@@ -60,10 +34,12 @@
                 android:title="@string/mnu_setup_finish" />
         </menu>
     </item>
+    <!--
     <item
         android:id="@+id/mnuStore"
         android:onClick="hStore"
         android:title="@string/mnu_store" />
+        -->
     <item
         android:id="@+id/mnuSolve"
         android:onClick="hSolve"
@@ -90,8 +66,8 @@
         android:title="@string/mnu_fields" >
         <menu>
             <item
-                android:onClick="hFieldClone"
-                android:title="@string/mnu_field_clone" />
+                android:onClick="hFieldCopy"
+                android:title="@string/mnu_field_copy" />
             <item
                 android:id="@+id/mnuSwitch"
                 android:onClick="hFieldSwitch"

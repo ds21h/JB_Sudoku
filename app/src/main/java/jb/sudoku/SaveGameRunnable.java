@@ -2,13 +2,13 @@ package jb.sudoku;
 
 import android.content.Context;
 
-class SavePlayfield implements Runnable {
-    private Context mContext;
-    private PlayField mField;
+class SaveGameRunnable implements Runnable {
+    private final Context mContext;
+    private final SudokuGameBase mGame;
 
-    SavePlayfield(Context pContext, PlayField pField){
+    SaveGameRunnable(Context pContext, SudokuGameBase pGame){
         mContext = pContext.getApplicationContext();
-        mField = new PlayField(pField);
+        mGame = new SudokuGameBase(pGame);
     }
 
     @Override
@@ -17,7 +17,7 @@ class SavePlayfield implements Runnable {
 
         lData = Data.getInstance(mContext);
         synchronized(mContext){
-            lData.xSavePlayField(mField);
+            lData.xSaveGame(mGame);
         }
     }
 }

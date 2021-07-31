@@ -2,9 +2,7 @@
 <resources>
     <string name="app_name">Sudoku</string>
     <string name="mnu_setup">Opzetten</string>
-    <string name="mnu_store">Opslaan</string>
     <string name="mnu_solve">Oplossen</string>
-    <string name="mnu_generate">Genereren</string>
     <string name="msg_solved">Puzzle opgelost!</string>
     <string name="msg_unsolvable">Puzzle niet oplosbaar!</string>
     <string name="mnu_level_easy">Makkelijk</string>
@@ -14,8 +12,6 @@
     <string name="msg_no_game">Geen spel beschikbaar!</string>
     <string name="mnu_setup_start">Start</string>
     <string name="mnu_setup_finish">Klaar</string>
-    <string name="mnu_level_very_easy">Erg makkelijk</string>
-    <string name="mnu_level_very_hard">Erg moeilijk</string>
     <string name="head_select_difficulty">Zet moeilijkheid</string>
     <string name="msg_no_selection">Niets geselecteerd!</string>
     <string name="msg_game_stored">Spel opgeslagen!</string>
@@ -23,9 +19,9 @@
     <string name="mnu_pencil_fill">Vullen</string>
     <string name="mnu_pencil_clear">Wissen</string>
     <string name="mnu_fields">SpeelVelden</string>
-    <string name="mnu_field_clone">Kloon</string>
     <string name="mnu_field_switch">Wissel</string>
     <string name="mnu_field_delete">Verwijder</string>
     <string name="vw_pencil">P</string>
     <string name="mnu_pencil_auto">Auto aanpassen</string>
+    <string name="mnu_field_copy">Kopieer</string>
 </resources>

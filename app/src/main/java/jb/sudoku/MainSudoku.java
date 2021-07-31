@@ -10,20 +10,16 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
-
+import androidx.annotation.NonNull;
 import com.jakewharton.threetenabp.AndroidThreeTen;
-
 import org.threeten.bp.Instant;
-
-import java.lang.ref.WeakReference;
 import java.util.List;
 
 public class MainSudoku extends Activity {
@@ -31,11 +27,21 @@ public class MainSudoku extends Activity {
     private SudokuView mSdkView;
     private SudokuGame mGame;
     private Data mData;
-    private AsyncTask mGenerator;
+    private GenerateRunnable mGenerate;
     private int mGenerateCount;
     private long mStartTime;
     private String mHeader;
 
+    Handler mGenerateHandler = new Handler(Looper.getMainLooper(), new Handler.Callback() {
+        @Override
+        public boolean handleMessage(@NonNull Message pMessage) {
+            if (pMessage.what == GenerateRunnable.cGenerateFinished){
+                sStartGame();
+            }
+            mGenerate = null;
+            return true;
+        }
+    });
     Handler mRefreshHandler = new Handler();
     Runnable mRefreshRunnable = new Runnable() {
         @SuppressLint("DefaultLocale")
@@ -56,7 +62,7 @@ public class MainSudoku extends Activity {
                     if (mGenerateCount > 5) {
                         mGenerateCount = 1;
                     }
-                    lBuilder.append(getString(R.string.mnu_generate));
+                    lBuilder.append(getString(R.string.mnu_new));
                     for (lCount = 0; lCount < mGenerateCount; lCount++) {
                         lBuilder.append(".");
                     }
@@ -103,16 +109,13 @@ public class MainSudoku extends Activity {
         setContentView(R.layout.mainsudoku_layout);
 
         mHeader = "";
-        mGenerator = null;
+        mGenerate = null;
         mGame = new SudokuGame();
         mSdkView = findViewById(R.id.svMain);
         mSdkView.setGame(mGame);
-        mSdkView.setIntSudokuView(new SudokuView.intSudokuView() {
-            @Override
-            public void onSolved() {
-                sSaveUsedTime();
-                Toast.makeText(mContext, R.string.msg_solved, Toast.LENGTH_SHORT).show();
-            }
+        mSdkView.setIntSudokuView(() -> {
+            sSaveUsedTime();
+            Toast.makeText(mContext, R.string.msg_solved, Toast.LENGTH_SHORT).show();
         });
         mData = Data.getInstance(mContext);
         mGenerateCount = -1;
@@ -152,12 +155,11 @@ public class MainSudoku extends Activity {
 
     @Override
     protected void onStop(){
-        SaveGame lSaveGame;
-        Thread lThread;
+        SaveGameRunnable lSaveGameRunnable;
 
-        lSaveGame = new SaveGame(mContext, mGame);
-        lThread = new Thread(lSaveGame);
-        lThread.start();
+        mGenerateHandler.removeCallbacksAndMessages(null);
+        lSaveGameRunnable = new SaveGameRunnable(mContext, mGame);
+        SudokuApp.getInstance().xExecutor.execute(lSaveGameRunnable);
 
         super.onStop();
     }
@@ -173,14 +175,10 @@ public class MainSudoku extends Activity {
     public boolean onPrepareOptionsMenu(Menu pMenu) {
         super.onPrepareOptionsMenu(pMenu);
 
-        List<PlayField> lFields;
-
         MenuItem lMnuGenerate;
-        MenuItem lMnuNew;
         MenuItem lMnuSetup;
         MenuItem lMnuSetupStart;
         MenuItem lMnuSetupFinish;
-        MenuItem lMnuStore;
         MenuItem lMnuSolve;
         MenuItem lMnuPencil;
         MenuItem lMnuPencilAuto;
@@ -188,12 +186,10 @@ public class MainSudoku extends Activity {
         MenuItem lMnuSwitch;
         MenuItem lMnuDelete;
 
-        lMnuGenerate = pMenu.findItem(R.id.mnuGenerate);
-        lMnuNew = pMenu.findItem(R.id.mnuNew);
+        lMnuGenerate = pMenu.findItem(R.id.mnuNew);
         lMnuSetup = pMenu.findItem(R.id.mnuSetup);
         lMnuSetupStart = pMenu.findItem(R.id.mnuSetupStart);
         lMnuSetupFinish = pMenu.findItem(R.id.mnuSetupFinish);
-        lMnuStore = pMenu.findItem(R.id.mnuStore);
         lMnuSolve = pMenu.findItem(R.id.mnuSolve);
         lMnuPencil = pMenu.findItem(R.id.mnuPencil);
         lMnuPencilAuto = pMenu.findItem(R.id.mnuPencilAuto);
@@ -204,11 +200,9 @@ public class MainSudoku extends Activity {
         switch (mGame.xGameStatus()){
             case SudokuGame.cStatusSetup:{
                 lMnuGenerate.setEnabled(false);
-                lMnuNew.setEnabled(false);
                 lMnuSetup.setEnabled(true);
                 lMnuSetupStart.setEnabled(false);
                 lMnuSetupFinish.setEnabled(true);
-                lMnuStore.setEnabled(false);
                 lMnuSolve.setEnabled(false);
                 lMnuPencil.setEnabled(false);
                 lMnuFields.setEnabled(false);
@@ -216,11 +210,9 @@ public class MainSudoku extends Activity {
             }
             case SudokuGame.cStatusGenerate:{
                 lMnuGenerate.setEnabled(false);
-                lMnuNew.setEnabled(false);
                 lMnuSetup.setEnabled(false);
                 lMnuSetupStart.setEnabled(false);
                 lMnuSetupFinish.setEnabled(false);
-                lMnuStore.setEnabled(false);
                 lMnuSolve.setEnabled(false);
                 lMnuPencil.setEnabled(false);
                 lMnuFields.setEnabled(false);
@@ -228,26 +220,16 @@ public class MainSudoku extends Activity {
             }
             case SudokuGame.cStatusPlay:{
                 lMnuGenerate.setEnabled(true);
-                lMnuNew.setEnabled(true);
                 lMnuSetup.setEnabled(true);
                 lMnuSetupStart.setEnabled(true);
                 lMnuSetupFinish.setEnabled(false);
-                if (mGame.xLibraryMode()){
-                    lMnuStore.setEnabled(false);
-                } else {
-                    lMnuStore.setEnabled(true);
-                }
                 lMnuSolve.setEnabled(true);
                 lMnuPencil.setEnabled(true);
                 lMnuPencilAuto.setChecked(mGame.xPencilAuto());
                 lMnuFields.setEnabled(true);
                 if (mGame.xFieldCount() > 1){
                     lMnuSwitch.setEnabled(true);
-                    if (mGame.xPlayField().xFieldId() == 0){
-                        lMnuDelete.setEnabled(false);
-                    } else {
-                        lMnuDelete.setEnabled(true);
-                    }
+                    lMnuDelete.setEnabled(mGame.xPlayField().xFieldId() != 0);
                 } else {
                     lMnuSwitch.setEnabled(false);
                     lMnuDelete.setEnabled(false);
@@ -256,15 +238,9 @@ public class MainSudoku extends Activity {
             }
             case SudokuGame.cStatusSolved:{
                 lMnuGenerate.setEnabled(true);
-                lMnuNew.setEnabled(true);
                 lMnuSetup.setEnabled(true);
                 lMnuSetupStart.setEnabled(true);
                 lMnuSetupFinish.setEnabled(false);
-                if (mGame.xLibraryMode()){
-                    lMnuStore.setEnabled(false);
-                } else {
-                    lMnuStore.setEnabled(true);
-                }
                 lMnuSolve.setEnabled(false);
                 lMnuPencil.setEnabled(false);
                 lMnuFields.setEnabled(false);
@@ -272,11 +248,9 @@ public class MainSudoku extends Activity {
             }
             default:{
                 lMnuGenerate.setEnabled(true);
-                lMnuNew.setEnabled(true);
                 lMnuSetup.setEnabled(true);
                 lMnuSetupStart.setEnabled(true);
                 lMnuSetupFinish.setEnabled(false);
-                lMnuStore.setEnabled(false);
                 lMnuSolve.setEnabled(false);
                 lMnuPencil.setEnabled(false);
                 lMnuFields.setEnabled(false);
@@ -290,24 +264,9 @@ public class MainSudoku extends Activity {
     protected void onDestroy() {
         super.onDestroy();
 
-        if (mGenerator != null) {
-            mGenerator.cancel(true);
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int pRequest, int pResult, Intent pInt) {
-        Bundle lBundle;
-        int lDifficulty;
-
-        if (pRequest == 1) {
-            if (pResult == RESULT_OK) {
-                lBundle = pInt.getExtras();
-                if (lBundle != null) {
-                    lDifficulty = lBundle.getInt(SelectDifficulty.cLevel);
-                    sStore(lDifficulty);
-                }
-            }
+        if (mGenerate != null){
+            mGenerate.xEnd();
+            mGenerate = null;
         }
     }
 
@@ -321,22 +280,6 @@ public class MainSudoku extends Activity {
         if (mGame.xEndSetup()){
             sStartGame();
         }
-    }
-
-    public void hStore(MenuItem pItem) {
-        Intent lInt;
-
-        lInt = new Intent();
-        lInt.setClass(this, SelectDifficulty.class);
-        startActivityForResult(lInt, 1);
-    }
-
-    private void sStore(int pLevel) {
-        String lGame;
-
-        lGame = mGame.xGame();
-        mData.xNewGame(pLevel, lGame);
-        Toast.makeText(mContext, R.string.msg_game_stored, Toast.LENGTH_SHORT).show();
     }
 
     public void hSolve(MenuItem pItem) {
@@ -357,70 +300,24 @@ public class MainSudoku extends Activity {
         int lLevel;
 
         lItem = pItem.getItemId();
-        switch (lItem) {
-            case R.id.mnuGenEasy:
-                lLevel = 1;
-                break;
-            case R.id.mnuGenMed:
-                lLevel = 2;
-                break;
-            case R.id.mnuGenHard:
-                lLevel = 3;
-                break;
-            default:
-                lLevel = 0;
-                break;
+        if (lItem == R.id.mnuGenEasy){
+            lLevel = SudokuGameBase.cDiffEasy;
+        } else {
+            if (lItem == R.id.mnuGenMed){
+                lLevel = SudokuGameBase.cDiffMedium;
+            } else {
+                if (lItem == R.id.mnuGenHard){
+                    lLevel = SudokuGameBase.cDiffHard;
+                } else {
+                    lLevel = 0;
+                }
+            }
         }
         if (lLevel > 0){
             mData.xDeleteSave();
-            if (mGenerator != null) {
-                if (mGenerator.getStatus() == AsyncTask.Status.FINISHED) {
-                    mGenerator = null;
-                }
-            }
-            if (mGenerator == null) {
-                mGenerator = new GenerateGame(this).execute(lLevel);
-                mGenerateCount = 0;
-                mSdkView.setEnabled(false);
-            }
-        }
-    }
-
-    public void hNew(MenuItem pItem) {
-        int lItem;
-        int lDifficulty;
-        String lGame;
-
-        lItem = pItem.getItemId();
-        switch (lItem) {
-            case R.id.mnuNewVE:
-                lDifficulty = 1;
-                break;
-            case R.id.mnuNewE:
-                lDifficulty = 2;
-                break;
-            case R.id.mnuNewM:
-                lDifficulty = 3;
-                break;
-            case R.id.mnuNewH:
-                lDifficulty = 4;
-                break;
-            case R.id.mnuNewVH:
-                lDifficulty = 5;
-                break;
-            default:
-                lDifficulty = 0;
-                break;
-        }
-        if (lDifficulty > 0){
-            mGame.xDifficulty(lDifficulty - 1);
-            mData.xDeleteSave();
-            lGame = mData.xRandomGame(mGame.xDifficulty());
-            if (lGame == null) {
-                Toast.makeText(mContext, R.string.msg_no_game, Toast.LENGTH_SHORT).show();
-            } else {
-                mGame.xNewGame(lGame);
-                sStartGame();
+            if (mGenerate == null){
+                mGenerate = new GenerateRunnable(mGenerateHandler, mGame, lLevel);
+                SudokuApp.getInstance().xExecutor.execute(mGenerate);
             }
         }
     }
@@ -447,14 +344,12 @@ public class MainSudoku extends Activity {
         mSdkView.invalidate();
     }
 
-    public void hFieldClone(MenuItem pItem) {
-        SavePlayfield lSavePlayfield;
-        Thread lThread;
+    public void hFieldCopy(MenuItem pItem) {
+        SavePlayfieldRunnable lSavePlayfieldRunnable;
 
-        lSavePlayfield = new SavePlayfield(mContext, mGame.xPlayField());
-        lThread = new Thread(lSavePlayfield);
-        lThread.start();
-        mGame.xPlayFieldClone();
+        lSavePlayfieldRunnable = new SavePlayfieldRunnable(mContext, mGame.xPlayField());
+        SudokuApp.getInstance().xExecutor.execute(lSavePlayfieldRunnable);
+        mGame.xPlayFieldCopy();
         mSdkView.invalidate();
     }
 
@@ -486,12 +381,7 @@ public class MainSudoku extends Activity {
         }
         if (lItems.length > 1){
             lBuilder = new AlertDialog.Builder(this);
-            lBuilder.setItems(lItems, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int pChoice) {
-                    sSwitchPlayField(Integer.parseInt(lItems[pChoice]));
-                }
-            });
+            lBuilder.setItems(lItems, (dialog, pChoice) -> sSwitchPlayField(Integer.parseInt(lItems[pChoice])));
             lDialog = lBuilder.create();
             lDialog.show();
         } else {
@@ -500,12 +390,10 @@ public class MainSudoku extends Activity {
     }
 
     private void sSwitchPlayField(int pNewId){
-        SavePlayfield lSavePlayfield;
-        Thread lThread;
+        SavePlayfieldRunnable lSavePlayfieldRunnable;
 
-        lSavePlayfield = new SavePlayfield(mContext, mGame.xPlayField());
-        lThread = new Thread(lSavePlayfield);
-        lThread.start();
+        lSavePlayfieldRunnable = new SavePlayfieldRunnable(mContext, mGame.xPlayField());
+        SudokuApp.getInstance().xExecutor.execute(lSavePlayfieldRunnable);
         mGame.xSwitchPlayField(pNewId);
         mSdkView.invalidate();
     }
@@ -526,37 +414,19 @@ public class MainSudoku extends Activity {
 
     private void sSetHeader() {
         String lHeader;
-        String lPrefix;
 
         if (mGame.xGameStatus() == SudokuGame.cStatusPlay || mGame.xGameStatus() == SudokuGame.cStatusSolved) {
-            if (mGame.xDifficulty() < 0) {
-                lPrefix = "";
-            } else {
-                if (mGame.xLibraryMode()) {
-                    lPrefix = "";
-                } else {
-                    lPrefix = "(G) ";
-                }
-            }
             switch (mGame.xDifficulty()) {
-                case 0: {
-                    lHeader = getString(R.string.mnu_level_very_easy);
-                    break;
-                }
-                case 1: {
+                case SudokuGameBase.cDiffEasy: {
                     lHeader = getString(R.string.mnu_level_easy);
                     break;
                 }
-                case 2: {
+                case SudokuGameBase.cDiffMedium: {
                     lHeader = getString(R.string.mnu_level_medium);
                     break;
                 }
-                case 3: {
+                case SudokuGameBase.cDiffHard: {
                     lHeader = getString(R.string.mnu_level_hard);
-                    break;
-                }
-                case 4: {
-                    lHeader = getString(R.string.mnu_level_very_hard);
                     break;
                 }
                 default: {
@@ -564,42 +434,9 @@ public class MainSudoku extends Activity {
                     break;
                 }
             }
-            mHeader = lPrefix + lHeader;
+            mHeader = lHeader;
         } else {
             mHeader = getString(R.string.app_name);
-        }
-    }
-
-    static class GenerateGame extends AsyncTask<Integer, Void, Void> {
-        WeakReference<MainSudoku> mRefMain;
-
-        private GenerateGame(MainSudoku pMain) {
-            mRefMain = new WeakReference<>(pMain);
-        }
-
-        @Override
-        protected Void doInBackground(Integer... pLevel) {
-            MainSudoku lMain;
-            int lLevel;
-
-            lMain = mRefMain.get();
-            if (lMain != null) {
-                lLevel = pLevel[0];
-                lMain.mGame.xGenerate(lLevel, this);
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-
-            MainSudoku lMain;
-
-            lMain = mRefMain.get();
-            if (lMain != null) {
-                lMain.sStartGame();
-            }
         }
     }
 }

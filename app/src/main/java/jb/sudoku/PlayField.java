@@ -201,21 +201,6 @@ class PlayField {
         sDigitCount();
     }
 
-    String xGame() {
-        StringBuilder lBuilder;
-        int lCount;
-
-        lBuilder = new StringBuilder();
-        for (lCount = 0; lCount < mCells.length; lCount++) {
-            if (mCells[lCount].xFixed()) {
-                lBuilder.append(mCells[lCount].xValue());
-            } else {
-                lBuilder.append("0");
-            }
-        }
-        return lBuilder.toString();
-    }
-
     boolean xSetCellValue(int pValue) {
         PlayCell lCell;
         boolean lValueSet;

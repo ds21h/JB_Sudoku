@@ -9,6 +9,13 @@ If you have any questions or remarks please send me a mail on ds21h@hotmail.com
 
 History
 
+Version 1.3 - 31-07-2021
+-   Deleted the 'new' menu option as it was never used.
+-   Renamed 'Generate' menu option to 'new'
+-   Replaced AsyncTask by Runnable in a threadpool
+-   Introduced threadpool on application level
+-   Changed all thread uses to threadpool
+
 Version 1.2.1 - 18-02-2021
 -   Introduced transactions on the DB. The multi-threaded approach introduced in Version 1.2 sometimes caused problems with simultaneous access.
 

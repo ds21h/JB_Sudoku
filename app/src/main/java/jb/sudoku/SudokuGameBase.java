@@ -1,17 +1,21 @@
 package jb.sudoku;
 
-import android.os.AsyncTask;
 import org.jetbrains.annotations.NotNull;
 
 class SudokuGameBase {
-    private boolean mLibraryMode;
     private int mGameStatus;
     static final int cStatusNone = 0;
     static final int cStatusSetup = 1;
     static final int cStatusGenerate = 2;
     static final int cStatusPlay = 3;
     static final int cStatusSolved = 4;
+
     private int mDifficulty;
+    static final int cDiffNone = 0;
+    static final int cDiffEasy = 1;
+    static final int cDiffMedium = 2;
+    static final int cDiffHard = 3;
+
     private int mUsedTime;
     private boolean mPencilSafe;
 
@@ -19,8 +23,7 @@ class SudokuGameBase {
 
     SudokuGameBase() {
         mGameStatus = cStatusNone;
-        mLibraryMode = false;
-        mDifficulty = -1;
+        mDifficulty = cDiffNone;
         mUsedTime = 0;
         mPencilSafe = false;
 
@@ -29,16 +32,14 @@ class SudokuGameBase {
 
     SudokuGameBase(SudokuGameBase pGame){
         mGameStatus = pGame.mGameStatus;
-        mLibraryMode = pGame.mLibraryMode;
         mDifficulty = pGame.mDifficulty;
         mUsedTime = pGame.mUsedTime;
         mPencilSafe = false;
         mPlayField = new PlayField(pGame.mPlayField);
     }
 
-    void xSudokuGameInit(PlayField pField, boolean pSetUp, boolean pLib, int pDifficulty, int pSelectedField, int pUsedTime) {
+    void xSudokuGameInit(PlayField pField, boolean pSetUp, int pDifficulty, int pUsedTime) {
         mPlayField = pField;
-        mLibraryMode = pLib;
         if (mPlayField.xEmptyField()) {
             mGameStatus = cStatusNone;
         } else {
@@ -81,16 +82,8 @@ class SudokuGameBase {
         mUsedTime = 0;
     }
 
-    boolean xLibraryMode() {
-        return mLibraryMode;
-    }
-
     int xDifficulty() {
         return mDifficulty;
-    }
-
-    void xDifficulty(int pDifficulty) {
-        mDifficulty = pDifficulty;
     }
 
     boolean xPencilAuto(){
@@ -141,8 +134,7 @@ class SudokuGameBase {
         if (mGameStatus != cStatusSetup) {
             mGameStatus = cStatusSetup;
             mPlayField.xResetField();
-            mLibraryMode = false;
-            mDifficulty = -1;
+            mDifficulty = cDiffNone;
         }
     }
 
@@ -162,20 +154,6 @@ class SudokuGameBase {
     void xStartGame() {
         mGameStatus = cStatusPlay;
         xResetUsedTime();
-    }
-
-    void xNewGame(String pGame) {
-        GameScrambler lScrambler;
-        Cell[] lCells;
-
-        lScrambler = new GameScrambler(pGame);
-        lCells = lScrambler.xScrambleGame();
-        mPlayField.xCells(lCells);
-        mLibraryMode = true;
-    }
-
-    String xGame() {
-        return mPlayField.xGame();
     }
 
     void xFillPencil() {
@@ -214,7 +192,6 @@ class SudokuGameBase {
 
     void xGenerateEnd(Cell[] pCells){
         mPlayField.xCells(pCells);
-        mLibraryMode = false;
     }
 
     void xSelectCell(int pRow, int pColumn){
@@ -228,7 +205,7 @@ class SudokuGameBase {
     void xProcessDigit(int pDigit) {
         PlayCell lCell;
         boolean lActionCorrect;
-        Boolean lCellFilled;
+        boolean lCellFilled;
 
         if (pDigit >= 1 && pDigit <= 9) {
             lCell = mPlayField.xSelectedCell();
