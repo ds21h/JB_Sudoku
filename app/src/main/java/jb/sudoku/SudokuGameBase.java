@@ -133,7 +133,7 @@ class SudokuGameBase {
     void xStartSetUp() {
         if (mGameStatus != cStatusSetup) {
             mGameStatus = cStatusSetup;
-            mPlayField.xResetField();
+            mPlayField.xInitField();
             mDifficulty = cDiffNone;
         }
     }

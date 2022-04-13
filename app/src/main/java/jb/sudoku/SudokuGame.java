@@ -69,6 +69,21 @@ class SudokuGame extends SudokuGameBase {
         xPlayField(lField);
     }
 
+    void xCombinePlayField(int pCombineId){
+        PlayField lCombineField;
+
+        lCombineField = null;
+        for (PlayField lField : mPlayFields){
+            if (lField.xFieldId() == pCombineId){
+                lCombineField = lField;
+                break;
+            }
+        }
+        if (lCombineField != null){
+            xPlayField().xCombineField(lCombineField);
+        }
+    }
+
     void xSwitchPlayField(int pNewId){
         for (PlayField lField : mPlayFields){
             if (lField.xFieldId() == pNewId){
@@ -79,10 +94,25 @@ class SudokuGame extends SudokuGameBase {
     }
 
     void xDeleteCurrentPlayField(){
-        if (xPlayField().xFieldId() != 0){
-            if (mPlayFields.size() > 1){
-                mPlayFields.remove(xPlayField());
-                xPlayField(mPlayFields.get(mPlayFields.size() - 1));
+        if (mPlayFields.size() > 1){
+            mPlayFields.remove(xPlayField());
+            xPlayField(mPlayFields.get(mPlayFields.size() - 1));
+        }
+    }
+
+    void xDeletePlayField(int pId){
+        int lCount;
+
+        if (mPlayFields.size() > 1){
+            if (xPlayField().xFieldId() == pId){
+                xDeleteCurrentPlayField();
+            } else {
+                for (lCount = 0; lCount < mPlayFields.size(); lCount++){
+                    if (mPlayFields.get(lCount).xFieldId() == pId){
+                        mPlayFields.remove(lCount);
+                        break;
+                    }
+                }
             }
         }
     }
@@ -98,5 +128,16 @@ class SudokuGame extends SudokuGameBase {
     void xGenerateEnd(Cell[] pCells){
         sInitPlayFields();
         super.xGenerateEnd(pCells);
+    }
+
+    void xResetGame(){
+        PlayField lPlayField;
+
+        lPlayField = mPlayFields.get(0);
+        lPlayField.xResetField();
+        mPlayFields.clear();
+        mPlayFields.add(lPlayField);
+        xPlayField(lPlayField);
+        xResetUsedTime();
     }
 }

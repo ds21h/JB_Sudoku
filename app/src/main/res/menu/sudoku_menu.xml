@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
         android:id="@+id/mnuNew"
@@ -8,15 +7,15 @@
         <menu>
             <item
                 android:id="@+id/mnuGenEasy"
-                android:onClick="hGenerate"
+                android:onClick="hNew"
                 android:title="@string/mnu_level_easy" />
             <item
                 android:id="@+id/mnuGenMed"
-                android:onClick="hGenerate"
+                android:onClick="hNew"
                 android:title="@string/mnu_level_medium" />
             <item
                 android:id="@+id/mnuGenHard"
-                android:onClick="hGenerate"
+                android:onClick="hNew"
                 android:title="@string/mnu_level_hard" />
         </menu>
     </item>
@@ -34,12 +33,10 @@
                 android:title="@string/mnu_setup_finish" />
         </menu>
     </item>
-    <!--
     <item
-        android:id="@+id/mnuStore"
-        android:onClick="hStore"
-        android:title="@string/mnu_store" />
-        -->
+        android:id="@+id/mnuReset"
+        android:onClick="hReset"
+        android:title="@string/mnu_reset" />
     <item
         android:id="@+id/mnuSolve"
         android:onClick="hSolve"
@@ -68,6 +65,10 @@
             <item
                 android:onClick="hFieldCopy"
                 android:title="@string/mnu_field_copy" />
+            <item
+                android:id="@+id/mnuCombine"
+                android:onClick="hFieldCombine"
+                android:title="@string/mnu_field_combine" />
             <item
                 android:id="@+id/mnuSwitch"
                 android:onClick="hFieldSwitch"

@@ -42,7 +42,7 @@ public class MainSudoku extends Activity {
             return true;
         }
     });
-    Handler mRefreshHandler = new Handler();
+    Handler mRefreshHandler = new Handler(Looper.getMainLooper());
     Runnable mRefreshRunnable = new Runnable() {
         @SuppressLint("DefaultLocale")
         @Override
@@ -175,82 +175,93 @@ public class MainSudoku extends Activity {
     public boolean onPrepareOptionsMenu(Menu pMenu) {
         super.onPrepareOptionsMenu(pMenu);
 
-        MenuItem lMnuGenerate;
+        MenuItem lMnuNew;
         MenuItem lMnuSetup;
         MenuItem lMnuSetupStart;
         MenuItem lMnuSetupFinish;
+        MenuItem lMnuReset;
         MenuItem lMnuSolve;
         MenuItem lMnuPencil;
         MenuItem lMnuPencilAuto;
         MenuItem lMnuFields;
+        MenuItem lMnuCombine;
         MenuItem lMnuSwitch;
         MenuItem lMnuDelete;
 
-        lMnuGenerate = pMenu.findItem(R.id.mnuNew);
+        lMnuNew = pMenu.findItem(R.id.mnuNew);
         lMnuSetup = pMenu.findItem(R.id.mnuSetup);
         lMnuSetupStart = pMenu.findItem(R.id.mnuSetupStart);
         lMnuSetupFinish = pMenu.findItem(R.id.mnuSetupFinish);
+        lMnuReset = pMenu.findItem(R.id.mnuReset);
         lMnuSolve = pMenu.findItem(R.id.mnuSolve);
         lMnuPencil = pMenu.findItem(R.id.mnuPencil);
         lMnuPencilAuto = pMenu.findItem(R.id.mnuPencilAuto);
         lMnuFields = pMenu.findItem(R.id.mnuFields);
+        lMnuCombine = pMenu.findItem(R.id.mnuCombine);
         lMnuSwitch = pMenu.findItem(R.id.mnuSwitch);
         lMnuDelete = pMenu.findItem(R.id.mnuDelete);
 
         switch (mGame.xGameStatus()){
             case SudokuGame.cStatusSetup:{
-                lMnuGenerate.setEnabled(false);
+                lMnuNew.setEnabled(false);
                 lMnuSetup.setEnabled(true);
                 lMnuSetupStart.setEnabled(false);
                 lMnuSetupFinish.setEnabled(true);
+                lMnuReset.setEnabled(false);
                 lMnuSolve.setEnabled(false);
                 lMnuPencil.setEnabled(false);
                 lMnuFields.setEnabled(false);
                 break;
             }
             case SudokuGame.cStatusGenerate:{
-                lMnuGenerate.setEnabled(false);
+                lMnuNew.setEnabled(false);
                 lMnuSetup.setEnabled(false);
                 lMnuSetupStart.setEnabled(false);
                 lMnuSetupFinish.setEnabled(false);
+                lMnuReset.setEnabled(false);
                 lMnuSolve.setEnabled(false);
                 lMnuPencil.setEnabled(false);
                 lMnuFields.setEnabled(false);
                 break;
             }
             case SudokuGame.cStatusPlay:{
-                lMnuGenerate.setEnabled(true);
+                lMnuNew.setEnabled(true);
                 lMnuSetup.setEnabled(true);
                 lMnuSetupStart.setEnabled(true);
                 lMnuSetupFinish.setEnabled(false);
+                lMnuReset.setEnabled(true);
                 lMnuSolve.setEnabled(true);
                 lMnuPencil.setEnabled(true);
                 lMnuPencilAuto.setChecked(mGame.xPencilAuto());
                 lMnuFields.setEnabled(true);
                 if (mGame.xFieldCount() > 1){
+                    lMnuCombine.setEnabled(true);
                     lMnuSwitch.setEnabled(true);
-                    lMnuDelete.setEnabled(mGame.xPlayField().xFieldId() != 0);
+                    lMnuDelete.setEnabled(true);
                 } else {
+                    lMnuCombine.setEnabled(false);
                     lMnuSwitch.setEnabled(false);
                     lMnuDelete.setEnabled(false);
                 }
                 break;
             }
             case SudokuGame.cStatusSolved:{
-                lMnuGenerate.setEnabled(true);
+                lMnuNew.setEnabled(true);
                 lMnuSetup.setEnabled(true);
                 lMnuSetupStart.setEnabled(true);
                 lMnuSetupFinish.setEnabled(false);
+                lMnuReset.setEnabled(false);
                 lMnuSolve.setEnabled(false);
                 lMnuPencil.setEnabled(false);
                 lMnuFields.setEnabled(false);
                 break;
             }
             default:{
-                lMnuGenerate.setEnabled(true);
+                lMnuNew.setEnabled(true);
                 lMnuSetup.setEnabled(true);
                 lMnuSetupStart.setEnabled(true);
                 lMnuSetupFinish.setEnabled(false);
+                lMnuReset.setEnabled(false);
                 lMnuSolve.setEnabled(false);
                 lMnuPencil.setEnabled(false);
                 lMnuFields.setEnabled(false);
@@ -295,7 +306,14 @@ public class MainSudoku extends Activity {
         }
     }
 
-    public void hGenerate(MenuItem pItem) {
+    public void hReset(MenuItem pItem) {
+        mData.xDeleteSave();
+        mGame.xResetGame();
+        sSetStartTime();
+        mSdkView.invalidate();
+    }
+
+    public void hNew(MenuItem pItem) {
         int lItem;
         int lLevel;
 
@@ -353,6 +371,10 @@ public class MainSudoku extends Activity {
         mSdkView.invalidate();
     }
 
+    public void hFieldCombine(MenuItem pItem) {
+        sSelectPlayField(1);
+    }
+
     public void hFieldDelete(MenuItem pItem){
         mData.xDeletePlayField(mGame.xPlayField().xFieldId());
         mGame.xDeleteCurrentPlayField();
@@ -360,6 +382,10 @@ public class MainSudoku extends Activity {
     }
 
     public void hFieldSwitch(MenuItem pItem){
+        sSelectPlayField(0);
+    }
+
+    private void sSelectPlayField(int pAction){
         AlertDialog lDialog;
         AlertDialog.Builder lBuilder;
         final String[] lItems;
@@ -381,11 +407,19 @@ public class MainSudoku extends Activity {
         }
         if (lItems.length > 1){
             lBuilder = new AlertDialog.Builder(this);
-            lBuilder.setItems(lItems, (dialog, pChoice) -> sSwitchPlayField(Integer.parseInt(lItems[pChoice])));
+            if (pAction == 0){
+                lBuilder.setItems(lItems, (dialog, pChoice) -> sSwitchPlayField(Integer.parseInt(lItems[pChoice])));
+            } else {
+                lBuilder.setItems(lItems, (dialog, pChoice) -> sCombinePlayField(Integer.parseInt(lItems[pChoice])));
+            }
             lDialog = lBuilder.create();
             lDialog.show();
         } else {
-            sSwitchPlayField(Integer.parseInt(lItems[0]));
+            if (pAction == 0){
+                sSwitchPlayField(Integer.parseInt(lItems[0]));
+            } else {
+                sCombinePlayField(Integer.parseInt(lItems[0]));
+            }
         }
     }
 
@@ -395,6 +429,13 @@ public class MainSudoku extends Activity {
         lSavePlayfieldRunnable = new SavePlayfieldRunnable(mContext, mGame.xPlayField());
         SudokuApp.getInstance().xExecutor.execute(lSavePlayfieldRunnable);
         mGame.xSwitchPlayField(pNewId);
+        mSdkView.invalidate();
+    }
+
+    private void sCombinePlayField(int pCombineId){
+        mGame.xCombinePlayField(pCombineId);
+        mData.xDeletePlayField(pCombineId);
+        mGame.xDeletePlayField(pCombineId);
         mSdkView.invalidate();
     }
 

@@ -177,4 +177,47 @@ class PlayCell extends Cell {
         }
     }
 
+/*    void xCombine(PlayCell pCombineCell){          // Overeenkomstige pencils
+        int lCount;
+
+        if (xValue() != pCombineCell.xValue()){
+            xValueReset();
+        }
+        if (xValue() == 0){
+            if (pCombineCell.xValue() > 0){
+                xClearPencils();
+            } else {
+                for (lCount = 0; lCount < mPencil.length; lCount++){
+                    if(mPencil[lCount]){
+                        if (!pCombineCell.mPencil[lCount]){
+                            mPencil[lCount] = false;
+                        }
+                    }
+                }
+            }
+        }
+    } */
+
+    void xCombine(PlayCell pCombineCell){           // Combinatie van pencils
+        int lCount;
+
+        if (xValue() != pCombineCell.xValue()){
+            if (xValue() > 0){
+                xClearPencils();
+                mPencil[xValue() - 1] = true;
+                xValueReset();
+            }
+        }
+        if (xValue() == 0){
+            if (pCombineCell.xValue() > 0){
+                mPencil[pCombineCell.xValue() - 1] = true;
+            } else {
+                for (lCount = 0; lCount < mPencil.length; lCount++){
+                    if (pCombineCell.mPencil[lCount]){
+                        mPencil[lCount] = true;
+                    }
+                }
+            }
+        }
+    }
 }

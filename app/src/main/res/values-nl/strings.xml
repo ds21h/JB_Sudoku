@@ -9,12 +9,8 @@
     <string name="mnu_level_medium">Gemiddeld</string>
     <string name="mnu_level_hard">Moeilijk</string>
     <string name="mnu_new">Nieuw</string>
-    <string name="msg_no_game">Geen spel beschikbaar!</string>
     <string name="mnu_setup_start">Start</string>
     <string name="mnu_setup_finish">Klaar</string>
-    <string name="head_select_difficulty">Zet moeilijkheid</string>
-    <string name="msg_no_selection">Niets geselecteerd!</string>
-    <string name="msg_game_stored">Spel opgeslagen!</string>
     <string name="mnu_pencil">Potlood</string>
     <string name="mnu_pencil_fill">Vullen</string>
     <string name="mnu_pencil_clear">Wissen</string>
@@ -24,4 +20,6 @@
     <string name="vw_pencil">P</string>
     <string name="mnu_pencil_auto">Auto aanpassen</string>
     <string name="mnu_field_copy">Kopieer</string>
+    <string name="mnu_field_combine">Combineer</string>
+    <string name="mnu_reset">Opnieuw</string>
 </resources>

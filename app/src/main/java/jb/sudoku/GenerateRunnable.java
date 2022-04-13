@@ -9,9 +9,12 @@ class GenerateRunnable implements Runnable{
     static final int cGenerateEnded = 0;
     static final int cGenerateFinished = 1;
 
+    private final int[] mMaxTry = {1, 3, 5};   // Retry numbers for Easy/Normal/Hard
+
     private Handler mHandler;
     private SudokuGame mGame;
     int mLevel;
+    int mMaxRetry;
     private GenerateCell[] mCells;
     private Random mRandom;
     private boolean mEnd;
@@ -20,6 +23,11 @@ class GenerateRunnable implements Runnable{
         mHandler = pHandler;
         mGame = pGame;
         mLevel = pLevel;
+        if (mLevel < 1 || mLevel > mMaxTry.length){
+            mMaxRetry = mMaxTry[mMaxTry.length - 1];
+        } else {
+            mMaxRetry = mMaxTry[mLevel - 1];
+        }
         mCells = new GenerateCell[81];
         mRandom = new Random();
         mEnd = false;
@@ -49,7 +57,7 @@ class GenerateRunnable implements Runnable{
             lGameOk = lSolver.xSingleSolution(mCells);
         } while (!lGameOk);
         if (!mEnd){
-            sCreateGame(lCellList, lSolver, mLevel);
+            sCreateGame(lCellList, lSolver, mMaxRetry);
             if (!mEnd){
                 sFinishGame();
                 mGame.xGenerateEnd(mCells);
@@ -128,20 +136,24 @@ class GenerateRunnable implements Runnable{
             if (mEnd){
                 break;
             }
-            lRndCell = mRandom.nextInt(pCellList.size());
-            lCellNumber = pCellList.get(lRndCell);
-            pCellList.remove(lRndCell);
-            lSaveValue = mCells[lCellNumber].xValue();
-            mCells[lCellNumber].xReset();
-            lGameOK = pSolver.xSingleSolution(mCells);
-            if (lGameOK){
-                lAttempt = 0;
-            } else {
-                mCells[lCellNumber].xValue(lSaveValue);
-                lAttempt++;
-                if (lAttempt > pMax){
-                    break;
+            if (pCellList.size() > 0){
+                lRndCell = mRandom.nextInt(pCellList.size());
+                lCellNumber = pCellList.get(lRndCell);
+                pCellList.remove(lRndCell);
+                lSaveValue = mCells[lCellNumber].xValue();
+                mCells[lCellNumber].xReset();
+                lGameOK = pSolver.xSingleSolution(mCells);
+                if (lGameOK){
+                    lAttempt = 0;
+                } else {
+                    mCells[lCellNumber].xValue(lSaveValue);
+                    lAttempt++;
+                    if (lAttempt > pMax){
+                        break;
+                    }
                 }
+            } else {
+                break;
             }
         } while (true);
     }

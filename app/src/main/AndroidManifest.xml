@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="jb.sudoku">
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -13,13 +14,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".SelectDifficulty"
-            android:screenOrientation="portrait"
-            android:label="@string/head_select_difficulty"
-            android:theme="@android:style/Theme.Holo.Light.Dialog.NoActionBar">
-        </activity>
-        <activity
             android:name=".MainSudoku"
+            android:exported="true"
+            tools:ignore="LockedOrientationActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

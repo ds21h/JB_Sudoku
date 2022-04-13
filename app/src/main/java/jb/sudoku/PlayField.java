@@ -176,7 +176,7 @@ class PlayField {
         }
     }
 
-    void xResetField() {
+    void xInitField() {
         int lCount;
 
         for (lCount = 0; lCount < mCells.length; lCount++) {
@@ -184,6 +184,28 @@ class PlayField {
         }
         sDigitCount();
         mPencilMode = false;
+    }
+
+    void xResetField(){
+        int lCount;
+
+        xResetFieldId();
+        for (lCount = 0; lCount < mCells.length; lCount++) {
+            if (!mCells[lCount].xFixed()){
+                mCells[lCount].xReset();
+             }
+        }
+        sDigitCount();
+        mPencilMode = false;
+    }
+
+    void xCombineField(PlayField pCombineField){
+        int lCount;
+
+        for (lCount = 0; lCount < mCells.length; lCount++){
+            mCells[lCount].xCombine(pCombineField.xCells()[lCount]);
+        }
+        sDigitCount();
     }
 
     void xFixField() {
