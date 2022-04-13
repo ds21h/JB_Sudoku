@@ -1,49 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item
-        android:id="@+id/mnuGenerate"
-        android:title="@string/mnu_generate">
-        <menu>
-            <item
-                android:id="@+id/mnuGenEasy"
-                android:onClick="hGenerate"
-                android:title="@string/mnu_level_easy" />
-            <item
-                android:id="@+id/mnuGenMed"
-                android:onClick="hGenerate"
-                android:title="@string/mnu_level_medium" />
-            <item
-                android:id="@+id/mnuGenHard"
-                android:onClick="hGenerate"
-                android:title="@string/mnu_level_hard" />
-        </menu>
-    </item>
     <item
         android:id="@+id/mnuNew"
         android:title="@string/mnu_new">
         <menu>
             <item
-                android:id="@+id/mnuNewVE"
-                android:onClick="hNew"
-                android:title="@string/mnu_level_very_easy" />
-            <item
-                android:id="@+id/mnuNewE"
+                android:id="@+id/mnuGenEasy"
                 android:onClick="hNew"
                 android:title="@string/mnu_level_easy" />
             <item
-                android:id="@+id/mnuNewM"
+                android:id="@+id/mnuGenMed"
                 android:onClick="hNew"
                 android:title="@string/mnu_level_medium" />
             <item
-                android:id="@+id/mnuNewH"
+                android:id="@+id/mnuGenHard"
                 android:onClick="hNew"
                 android:title="@string/mnu_level_hard" />
-            <item
-                android:id="@+id/mnuNewVH"
-                android:onClick="hNew"
-                android:title="@string/mnu_level_very_hard" />
         </menu>
     </item>
     <item
@@ -61,9 +34,9 @@
         </menu>
     </item>
     <item
-        android:id="@+id/mnuStore"
-        android:onClick="hStore"
-        android:title="@string/mnu_store" />
+        android:id="@+id/mnuReset"
+        android:onClick="hReset"
+        android:title="@string/mnu_reset" />
     <item
         android:id="@+id/mnuSolve"
         android:onClick="hSolve"
@@ -90,8 +63,12 @@
         android:title="@string/mnu_fields" >
         <menu>
             <item
-                android:onClick="hFieldClone"
-                android:title="@string/mnu_field_clone" />
+                android:onClick="hFieldCopy"
+                android:title="@string/mnu_field_copy" />
+            <item
+                android:id="@+id/mnuCombine"
+                android:onClick="hFieldCombine"
+                android:title="@string/mnu_field_combine" />
             <item
                 android:id="@+id/mnuSwitch"
                 android:onClick="hFieldSwitch"

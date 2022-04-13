@@ -2,7 +2,6 @@ package jb.sudoku;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -18,7 +17,7 @@ public class SudokuView extends View {
 
     private final int cMargin = 10;
     private final int cButtonMargin = 20;
-    private Paint mPaint = new Paint();
+    private final Paint mPaint = new Paint();
     private final int cColorBackNorm = Color.argb(255, 255, 255, 245);
     private final int cColorBackFixed = Color.argb(255, 230, 230, 230);
     private final int cColorBackRange = Color.argb(255, 255, 255, 150);
@@ -40,9 +39,9 @@ public class SudokuView extends View {
     private float mCellSize;
     private float mButtonSize;
 
-    private Context mContext;
+    private final Context mContext;
     private SudokuGame mGame = null;
-    private RectF[] mButton = new RectF[10];
+    private final RectF[] mButton = new RectF[10];
     private boolean mButtonsEnabled;
     private boolean mEnabled;
 

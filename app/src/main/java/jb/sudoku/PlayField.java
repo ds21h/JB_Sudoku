@@ -176,7 +176,7 @@ class PlayField {
         }
     }
 
-    void xResetField() {
+    void xInitField() {
         int lCount;
 
         for (lCount = 0; lCount < mCells.length; lCount++) {
@@ -184,6 +184,28 @@ class PlayField {
         }
         sDigitCount();
         mPencilMode = false;
+    }
+
+    void xResetField(){
+        int lCount;
+
+        xResetFieldId();
+        for (lCount = 0; lCount < mCells.length; lCount++) {
+            if (!mCells[lCount].xFixed()){
+                mCells[lCount].xReset();
+             }
+        }
+        sDigitCount();
+        mPencilMode = false;
+    }
+
+    void xCombineField(PlayField pCombineField){
+        int lCount;
+
+        for (lCount = 0; lCount < mCells.length; lCount++){
+            mCells[lCount].xCombine(pCombineField.xCells()[lCount]);
+        }
+        sDigitCount();
     }
 
     void xFixField() {
@@ -199,21 +221,6 @@ class PlayField {
             }
         }
         sDigitCount();
-    }
-
-    String xGame() {
-        StringBuilder lBuilder;
-        int lCount;
-
-        lBuilder = new StringBuilder();
-        for (lCount = 0; lCount < mCells.length; lCount++) {
-            if (mCells[lCount].xFixed()) {
-                lBuilder.append(mCells[lCount].xValue());
-            } else {
-                lBuilder.append("0");
-            }
-        }
-        return lBuilder.toString();
     }
 
     boolean xSetCellValue(int pValue) {

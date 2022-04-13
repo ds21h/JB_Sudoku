@@ -1,14 +1,10 @@
 package jb.sudoku;
 
-import android.os.AsyncTask;
-
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.List;
 
 class SudokuGame extends SudokuGameBase {
-    private List<PlayField> mPlayFields;
+    private final List<PlayField> mPlayFields;
 
     SudokuGame() {
         super();
@@ -18,10 +14,11 @@ class SudokuGame extends SudokuGameBase {
     }
 
     SudokuGame(SudokuGame pGame){
-
+        super(pGame);
+        mPlayFields = null;
     }
 
-    SudokuGame(List<PlayField> pFields, boolean pSetUp, boolean pLib, int pDifficulty, int pSelectedField, int pUsedTime) {
+    SudokuGame(List<PlayField> pFields, boolean pSetUp, int pDifficulty, int pSelectedField, int pUsedTime) {
         super();
 
         PlayField lPlayField;
@@ -41,15 +38,11 @@ class SudokuGame extends SudokuGameBase {
                 }
             }
         }
-        super.xSudokuGameInit(lPlayField, pSetUp, pLib, pDifficulty, pSelectedField, pUsedTime);
+        super.xSudokuGameInit(lPlayField, pSetUp, pDifficulty, pUsedTime);
     }
 
     List<PlayField> xPlayFields(){
         return mPlayFields;
-    }
-
-    int xSelectedField() {
-        return xPlayField().xFieldId();
     }
 
     int xFieldCount(){
@@ -66,7 +59,7 @@ class SudokuGame extends SudokuGameBase {
         xPlayField(lPlayField);
     }
 
-    void xPlayFieldClone(){
+    void xPlayFieldCopy(){
         int lNewId;
         PlayField lField;
 
@@ -74,6 +67,21 @@ class SudokuGame extends SudokuGameBase {
         lField = new PlayField(lNewId, xPlayField());
         mPlayFields.add(lField);
         xPlayField(lField);
+    }
+
+    void xCombinePlayField(int pCombineId){
+        PlayField lCombineField;
+
+        lCombineField = null;
+        for (PlayField lField : mPlayFields){
+            if (lField.xFieldId() == pCombineId){
+                lCombineField = lField;
+                break;
+            }
+        }
+        if (lCombineField != null){
+            xPlayField().xCombineField(lCombineField);
+        }
     }
 
     void xSwitchPlayField(int pNewId){
@@ -86,10 +94,25 @@ class SudokuGame extends SudokuGameBase {
     }
 
     void xDeleteCurrentPlayField(){
-        if (xPlayField().xFieldId() != 0){
-            if (mPlayFields.size() > 1){
-                mPlayFields.remove(xPlayField());
-                xPlayField(mPlayFields.get(mPlayFields.size() - 1));
+        if (mPlayFields.size() > 1){
+            mPlayFields.remove(xPlayField());
+            xPlayField(mPlayFields.get(mPlayFields.size() - 1));
+        }
+    }
+
+    void xDeletePlayField(int pId){
+        int lCount;
+
+        if (mPlayFields.size() > 1){
+            if (xPlayField().xFieldId() == pId){
+                xDeleteCurrentPlayField();
+            } else {
+                for (lCount = 0; lCount < mPlayFields.size(); lCount++){
+                    if (mPlayFields.get(lCount).xFieldId() == pId){
+                        mPlayFields.remove(lCount);
+                        break;
+                    }
+                }
             }
         }
     }
@@ -101,17 +124,20 @@ class SudokuGame extends SudokuGameBase {
         }
     }
 
-    void xGenerate(int pLevel, AsyncTask pTask) {
-        SudokuGenerator lGenerator;
-        Cell[] lCells;
+    @Override
+    void xGenerateEnd(Cell[] pCells){
+        sInitPlayFields();
+        super.xGenerateEnd(pCells);
+    }
 
-        xGenerateStart(pLevel );
+    void xResetGame(){
+        PlayField lPlayField;
 
-        lGenerator = new SudokuGenerator();
-        lCells = lGenerator.xGenerate(pLevel, pTask);
-        if (!(pTask != null && pTask.isCancelled())) {
-            sInitPlayFields();
-            xGenerateEnd(lCells);
-        }
+        lPlayField = mPlayFields.get(0);
+        lPlayField.xResetField();
+        mPlayFields.clear();
+        mPlayFields.add(lPlayField);
+        xPlayField(lPlayField);
+        xResetUsedTime();
     }
 }

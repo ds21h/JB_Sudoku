@@ -3,7 +3,7 @@ package jb.sudoku;
 import org.jetbrains.annotations.NotNull;
 
 class SudokuSolver {
-    private Cell[] mCells;
+    private final Cell[] mCells;
 
     SudokuSolver(){
         int lCount;
