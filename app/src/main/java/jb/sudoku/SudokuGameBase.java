@@ -156,6 +156,14 @@ class SudokuGameBase {
         xResetUsedTime();
     }
 
+    void xResetGame(){
+        PlayField lPlayField;
+
+        mPlayField.xResetField();
+        xResetUsedTime();
+        mGameStatus = cStatusPlay;
+    }
+
     void xFillPencil() {
         mPlayField.xInitPencil();
         sPencilRows();

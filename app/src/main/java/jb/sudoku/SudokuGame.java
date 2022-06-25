@@ -130,14 +130,14 @@ class SudokuGame extends SudokuGameBase {
         super.xGenerateEnd(pCells);
     }
 
+    @Override
     void xResetGame(){
         PlayField lPlayField;
 
-        lPlayField = mPlayFields.get(0);
+        super.xResetGame();
+        lPlayField = xPlayField();
         lPlayField.xResetField();
         mPlayFields.clear();
         mPlayFields.add(lPlayField);
-        xPlayField(lPlayField);
-        xResetUsedTime();
     }
 }
