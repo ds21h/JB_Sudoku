@@ -9,6 +9,9 @@ If you have any questions or remarks please send me a mail on ds21h@hotmail.com
 
 History
 
+Version 1.3.3 - 25-06-2022
+-   Reset made possible on a finished game
+
 Version 1.3.2 - 13-04-2022
 -   Bugfix: Difficulty for 'Medium' displayed as 'Hard'
 

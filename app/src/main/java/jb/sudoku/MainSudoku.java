@@ -250,7 +250,7 @@ public class MainSudoku extends Activity {
                 lMnuSetup.setEnabled(true);
                 lMnuSetupStart.setEnabled(true);
                 lMnuSetupFinish.setEnabled(false);
-                lMnuReset.setEnabled(false);
+                lMnuReset.setEnabled(true);
                 lMnuSolve.setEnabled(false);
                 lMnuPencil.setEnabled(false);
                 lMnuFields.setEnabled(false);
