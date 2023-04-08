@@ -16,6 +16,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.WindowManager;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import com.jakewharton.threetenabp.AndroidThreeTen;
@@ -23,11 +24,13 @@ import org.threeten.bp.Instant;
 import java.util.List;
 
 public class MainSudoku extends Activity {
+    private static final int cMaxGenerate = 3;
     private final Context mContext = this;
     private SudokuView mSdkView;
     private SudokuGame mGame;
     private Data mData;
-    private GenerateRunnable mGenerate;
+    private GenerateRunnable[] mGenerate;
+    private boolean mGenerateActive;
     private int mGenerateCount;
     private long mStartTime;
     private String mHeader;
@@ -35,10 +38,21 @@ public class MainSudoku extends Activity {
     Handler mGenerateHandler = new Handler(Looper.getMainLooper(), new Handler.Callback() {
         @Override
         public boolean handleMessage(@NonNull Message pMessage) {
-            if (pMessage.what == GenerateRunnable.cGenerateFinished){
+            Cell[] lCells;
+
+            if (mGenerateActive){
+                if (pMessage.what == GenerateRunnable.cGenerateFinished){
+                    sGenerateEnd();
+                    mGenerateActive = false;
+                    lCells = (Cell[])pMessage.obj;
+                    mGame.xGenerateEnd(lCells);
+                    sStartGame();
+                }
+            }
+ /*           if (pMessage.what == GenerateRunnable.cGenerateFinished){
                 sStartGame();
             }
-            mGenerate = null;
+            mGenerate = null; */
             return true;
         }
     });
@@ -107,9 +121,11 @@ public class MainSudoku extends Activity {
         super.onCreate(savedInstanceState);
         AndroidThreeTen.init(this);
         setContentView(R.layout.mainsudoku_layout);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         mHeader = "";
-        mGenerate = null;
+        mGenerate = new GenerateRunnable[cMaxGenerate];
+        mGenerateActive = false;
         mGame = new SudokuGame();
         mSdkView = findViewById(R.id.svMain);
         mSdkView.setGame(mGame);
@@ -274,10 +290,20 @@ public class MainSudoku extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
-        if (mGenerate != null){
+        sGenerateEnd();
+/*        if (mGenerate != null){
             mGenerate.xEnd();
             mGenerate = null;
+        } */
+    }
+
+    private void sGenerateEnd(){
+        int lIndex;
+
+        for(lIndex = 0; lIndex < mGenerate.length; lIndex++){
+            if (mGenerate[lIndex] != null){
+                mGenerate[lIndex].xEnd();
+            }
         }
     }
 
@@ -316,6 +342,7 @@ public class MainSudoku extends Activity {
     public void hNew(MenuItem pItem) {
         int lItem;
         int lLevel;
+        int lIndex;
 
         lItem = pItem.getItemId();
         if (lItem == R.id.mnuGenEasy){
@@ -332,11 +359,18 @@ public class MainSudoku extends Activity {
             }
         }
         if (lLevel > 0){
+            sGenerateEnd();
             mData.xDeleteSave();
-            if (mGenerate == null){
+            mGame.xGenerateStart(lLevel);
+            mGenerateActive = true;
+            for (lIndex = 0; lIndex < mGenerate.length; lIndex++){
+                mGenerate[lIndex] = new GenerateRunnable(mGenerateHandler, mGame, lLevel);
+                SudokuApp.getInstance().xExecutor.execute(mGenerate[lIndex]);
+            }
+/*            if (mGenerate == null){
                 mGenerate = new GenerateRunnable(mGenerateHandler, mGame, lLevel);
                 SudokuApp.getInstance().xExecutor.execute(mGenerate);
-            }
+            } */
         }
     }
 

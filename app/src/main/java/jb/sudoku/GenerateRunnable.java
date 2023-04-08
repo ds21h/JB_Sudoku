@@ -1,6 +1,8 @@
 package jb.sudoku;
 
 import android.os.Handler;
+import android.os.Message;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -33,19 +35,25 @@ class GenerateRunnable implements Runnable{
         mEnd = false;
     }
 
+    GenerateCell[] xGame(){
+        return mCells;
+    }
+
     void xEnd(){
         mEnd = true;
     }
 
     @Override
     public void run() {
+        Message lMessage;
         int lResult;
         SudokuSolver lSolver = new SudokuSolver();
         boolean lGameOk;
         List<Integer> lCellList = new ArrayList<>();
 
+        lMessage = mHandler.obtainMessage();
         lResult = cGenerateEnded;
-        mGame.xGenerateStart(mLevel);
+//        mGame.xGenerateStart(mLevel);
         do {
             if (mEnd){
                 break;
@@ -60,11 +68,14 @@ class GenerateRunnable implements Runnable{
             sCreateGame(lCellList, lSolver, mMaxRetry);
             if (!mEnd){
                 sFinishGame();
-                mGame.xGenerateEnd(mCells);
+                lMessage.obj = mCells;
+//                mGame.xGenerateEnd(mCells);
                 lResult |= cGenerateFinished;
             }
         }
-        mHandler.sendEmptyMessage(lResult);
+        lMessage.what = lResult;
+        mHandler.sendMessage(lMessage);
+//        mHandler.sendEmptyMessage(lResult);
     }
 
     private void sInit() {

@@ -9,6 +9,12 @@ If you have any questions or remarks please send me a mail on ds21h@hotmail.com
 
 History
 
+Version 1.4 - 08-04-2023
+-   Upgraded to API 33 (Android 13)
+-   Generate now starts 3 parallel tasks. The result of the first finished task is used and the remaining tasks are canceled.
+    This is because generation is a cpu-intensive task that takes sometimes a long time.
+-   Screen is kept alive. Auto-sleep is disabled.
+
 Version 1.3.3 - 25-06-2022
 -   Reset made possible on a finished game
 
